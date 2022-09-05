@@ -1,9 +1,9 @@
 module mul(
-    input   wire [3:0]  mul_a       ,
-    input   wire [2:0]  mul_b       ,
-    input               sysclk      ,
-    input               rst         ,
-    output  reg  [6:0]  mul_result
+    input       mul_a       ,
+    input       mul_b       ,
+    input       sysclk      ,
+    input       rst         ,
+    output reg  mul_result
 );
 
 // 参数化
@@ -12,6 +12,11 @@ parameter B_W = 3           ;
 parameter C_W = A_W + B_W   ;
 
 reg  [C_W-1:0]  mul_result_tmp;
+
+wire [A_W-1:0]  mul_a       ;
+wire [B_W-1:0]  mul_b       ;
+reg  [C_W-1:0]  mul_result  ;
+
 
 // 组合逻辑
 always@(*)
