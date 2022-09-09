@@ -20,17 +20,17 @@ wire [5:0]  result_b_tmp;
 
 
 //
-// ä¸€çº§ç»“æž„
+// Ò»¼¶½á¹¹
 //
 always@(*)
 begin
    a_and_b = sel_a && sel_b;
 end
 
-always@(posedge clk or negedage rst)
+always@(posedge clk or negedge rst)
 begin
-    if( !rst ) begin
-        clk_sel <= 0;
+    if(!rst) begin
+        clk_sel <= 1'b0;
     end
     else begin
         clk_sel <= a_and_b;
@@ -39,7 +39,7 @@ end
 
 always@(*)
 begin
-    if(clk_sel == 0) begin
+    if(clk_sel == 1'b0) begin
         sel_rel = din_c;
     end
     else begin
@@ -47,9 +47,9 @@ begin
 end
 
 //
-// äºŒçº§ç»“æž„
+// ¶þ¼¶½á¹¹
 //
-// å¯¹ mul æ¨¡å—çš„é¢„å®šä¹‰å‚æ•°è¿›è¡Œä¿®æ”¹ï¼Œä»¥åŒ¹é…æ­¤å¤„ä¿¡å·ä½å®½
+// ¶Ô mul Ä£¿éµÄÔ¤¶¨Òå²ÎÊý½øÐÐÐÞ¸Ä£¬ÒÔÆ¥Åä´Ë´¦ÐÅºÅÎ»¿í
 mul_module#(.A_W(3),.B_W(4)) mul_module_1(
     .mul_a          (din_a),
     .mul_b          (sel_rel),
@@ -67,9 +67,9 @@ mul_module#(.A_W(2),.B_W(4)) mul_module_2(
 );
 
 //
-// ä¸‰çº§ç»“æž„
+// Èý¼¶½á¹¹
 //
-always@(posedge clk or negedage rst)
+always@(posedge clk or negedge rst)
 begin
     if(!rst) begin
         result_a <= 0;
@@ -79,7 +79,7 @@ begin
     end
 end
 
-always@(posedge clk or negedage rst)
+always@(posedge clk or negedge rst)
 begin
     if(!rst) begin
         result_b <= 0;
@@ -89,3 +89,4 @@ begin
     end
 end
 
+endmodule

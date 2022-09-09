@@ -3,10 +3,10 @@ module mul(
     input       mul_b       ,
     input       sysclk      ,
     input       rst         ,
-    output reg  mul_result
+    output      mul_result
 );
 
-// å‚æ•°åŒ–
+// ²ÎÊı»¯
 parameter A_W = 4           ;
 parameter B_W = 3           ;
 parameter C_W = A_W + B_W   ;
@@ -18,13 +18,13 @@ wire [B_W-1:0]  mul_b       ;
 reg  [C_W-1:0]  mul_result  ;
 
 
-// ç»„åˆé€»è¾‘
+// ×éºÏÂß¼­
 always@(*)
 begin
     mul_result_tmp = mul_a*mul_b;
 end
 
-// æ—¶åºé€»è¾‘
+// Ê±ĞòÂß¼­
 always@(posedge sysclk or negedge rst)
 begin
     if(rst==1) begin
@@ -34,3 +34,5 @@ begin
         mul_result <= mul_result_tmp;
     end
 end
+
+endmodule
