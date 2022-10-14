@@ -1,6 +1,6 @@
-#
-# 分频时钟，主时钟 100MHz，输出时候频率为 1MHz
-#
+//
+// 分频时钟，主时钟 100MHz，输出时候频率为 1MHz
+//
 
 module partfreq(
     input       clk,
