@@ -28,9 +28,7 @@ initial begin
     rst <= 1;
 end
 
-always@(CLK_PERIOD / 2) begin
-    clk <= ~ clk;
-end
+always #(CLK_PERIORD / 2) clk = ~clk;
 
 
 // ²úÉú²âÊÔ¼¤Àø
