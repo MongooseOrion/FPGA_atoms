@@ -25,9 +25,9 @@ partfreq    partfreq_test(			// 前者是 设计模块 名称，后者是 例化模块 名称
 //////////////////////////////////
 initial begin
 	clk <= 0;
-	rst_n <= 0;
+	rst <= 0;
 	#1000;
-	rst_n <= 1;
+	rst <= 1;
 end
 	
 // 时钟产生，周期符合 100MHz 的要求
@@ -39,7 +39,7 @@ always #(CLK_PERIORD / 2) clk = ~clk;
 ////////////////////////////////////////////////////////////
 initial begin
 
-	@(posedge rst_n);	        // 等待复位完成
+	@(posedge rst);	        	// 等待复位完成
 	
 	@(posedge clk);				// 等待时钟上升沿
 	

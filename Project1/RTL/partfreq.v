@@ -32,10 +32,11 @@ begin
         clk_out <= 1'b0;
     end
     else if(cnt < CNT_HALF) begin
-        clk_out <= ~clk_out;
+        clk_out <= 1'b1;
     end
     else begin
-        clk_out <= clk_out;
+        clk_out <= 1'b0;
     end
+end
 
 endmodule

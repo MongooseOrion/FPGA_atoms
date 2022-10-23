@@ -12,6 +12,8 @@ module sumfour(
 reg [3:0]   cnt_1;
 reg [3:0]   cnt_2;
 
+
+// 验证 cnt_1 和 cnt_2 两个信号是并行执行 always 块的内容
 always@(posedge clk or negedge rst) begin
     if(!rst) begin
         cnt_1 <= 0;
@@ -26,7 +28,7 @@ always@(posedge clk or negedge rst) begin
         cnt_2 <= 0;
     end
     else begin
-        cnt_2 <= 1'b1;
+        cnt_2 <= cnt_2 + 1'b1;
     end
 end
 
