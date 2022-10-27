@@ -407,7 +407,7 @@ FodyWeavers.xsd
 #########
 
 #########################
-Vivado/Vivado.cache/
+Vivado/Vivado.cache/*
 
 *
 !*/
