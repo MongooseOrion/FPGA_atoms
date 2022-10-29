@@ -408,6 +408,9 @@ FodyWeavers.xsd
 
 #########################
 Vivado/Vivado.cache/*
+**/Vivado.cache/*
+.Xil/
+**/.jobs/
 
 *
 !*/
