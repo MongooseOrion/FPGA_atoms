@@ -8,7 +8,7 @@ module testbench_gray(
 );
 
 parameter CLK_PERIOD = 10;
-parameter GRAY_MSB =4;
+parameter GRAY_MSB = 4;
 
 reg                 clk;
 reg                 rst;
@@ -40,6 +40,7 @@ initial begin
     rst <= 1;
 
     #10000;
+    $fclose(wfile);
     $stop;
 end
 always #(CLK_PERIOD/2) clk=~clk;
@@ -50,6 +51,7 @@ initial begin
     @(posedge rst);
 
     // 使能信号
+    #300;
     i_en <= 1;
     /*
     for(i=0;i<=5;i=i+1) begin
@@ -67,6 +69,12 @@ initial begin
     @(posedge clk);
     
     // 数据信号
+    repeat(2**(GRAY_MSB+1)-1) begin
+		@(posedge clk);
+		i_data <= i_data + 1'b1;
+	end
+
+    /*
     for(i=0;i<=50;i=i+1) begin
         @(posedge clk);
         #(CLK_PERIOD*8);
@@ -74,6 +82,22 @@ initial begin
         @(posedge clk);
         $monitor("bin is %b, gray is %b, time is %d.",i_data,o_data,$time);
     end
+    */
+end
+
+always @(posedge clk) begin
+	if(o_valid) $display("%b",o_data);
+	else ;
+end
+
+
+integer wfile;
+initial begin
+    wfile = $fopen("./output_file/testbench_gray.txt","w");
+end
+
+always@(posedge clk) begin
+    if(o_valid) $fwrite(wfile,"%b\n",o_data);
 end
 
 endmodule
