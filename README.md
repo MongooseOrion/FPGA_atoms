@@ -21,7 +21,49 @@
   $$I_{D,max}=\frac{1}{2}\mu_{n}C_{ox}\frac{W}{L}\left( V_{GS}-V_{TH} \right)^{2}(1+\lambda V_{DS})$$
 
 ## 文件夹：solution1
-请注意：在该文件夹中包含了基础模块的测试代码和各自对应的验证平台（*testbench*）代码，由于没有实现所有模块的顶层例化，因此不能直接导入文件夹的内容到 *Vivado* 中。
+请注意：在该文件夹中包含了基础模块的测试代码和各自对应的验证平台（*testbench*）代码，由于没有实现所有模块的顶层例化，因此不能直接导入文件夹的内容到 *Vivado* 中。下面介绍一些相对不常见的内容。
+### 文件写入和读取操作
+文件操作与 python 类似。在创建文件对象后，将内容写入，同时可指定操作类型，最后关闭文件。一套完整的 testbench 数据写入文件的操作如下述所示：
+```ruby
+integer wfile;
+
+initial begin
+	wfile = $fopen("./output_file/result_data.txt","w");
+end
+
+always @(posedge clk) begin
+	if(valid) $fwrite(wfile,"%b\n",data);
+end
+
+initial begin
+  #10000;
+  $fclose(wfile);
+end
+```
+读取文件可如下述所示，这里定义了一个 8 位格雷码数据输出与正确的格雷码相比对的功能：
+```ruby
+reg[7:0] data_mem[255:0];
+initial $readmemb("./input_file/8bit_grayencode.txt",data_mem);
+
+always @(posedge clk) begin
+	if(valid) $display("%b\n%b\n\n",o_gray,data_mem[cnt]);
+end
+```
+
+### 随机数生成
+如果想要产生负数到正数范围内的随机数，例如 -99 到 99，则按如下代码：
+```
+variable = $random % 100;
+```
+如果仅需产生正数范围的随机数，例如 0 到 99，则可使用：
+```
+variable = {$random} % 100;
+```
+如果需要在指定范围产生随机数，例如 min 到 max，则使用：
+```
+variable = min + {%random} % {max-min+1}
+```
+同时，在学习 c 语言时我们知道，`$random`是一种伪随机数函数，这种情况在 verilog 中被放大了——在不同的 always 块内如果重复使用了`$random`函数，则生成的随机数完全一样。解决方法是这样写：`$random(seed)`。
 
 ## 文件夹：solution2
 在该文件夹中将包含遵守“自顶层向下”设计规范的多模块系统设计，由 *Vivado* 项目文件完成整合工作。

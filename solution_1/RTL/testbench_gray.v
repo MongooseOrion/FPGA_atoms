@@ -65,16 +65,17 @@ initial begin
 end
 initial begin
     @(posedge rst);
-
+    #500;
     @(posedge clk);
     
+    /*
     // Êý¾ÝÐÅºÅ
     repeat(2**(GRAY_MSB+1)-1) begin
 		@(posedge clk);
 		i_data <= i_data + 1'b1;
 	end
-
-    /*
+*/
+    
     for(i=0;i<=50;i=i+1) begin
         @(posedge clk);
         #(CLK_PERIOD*8);
@@ -82,18 +83,20 @@ initial begin
         @(posedge clk);
         $monitor("bin is %b, gray is %b, time is %d.",i_data,o_data,$time);
     end
-    */
+    
 end
 
+
+/*
 always @(posedge clk) begin
 	if(o_valid) $display("%b",o_data);
 	else ;
 end
-
+*/
 
 integer wfile;
 initial begin
-    wfile = $fopen("./output_file/testbench_gray.txt","w");
+    wfile = $fopen("C:/Users/YiMon/source/repos/MyVerilogLearning/solution_1/RTL/output_file/testbench_gray_data.txt","w");
 end
 
 always@(posedge clk) begin
