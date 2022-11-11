@@ -7,7 +7,7 @@ module vending_machine(
     input               i_one_cny,
     input               i_two_cny,
     input               i_five_cny,
-    output              o_done
+    output  reg         o_done
 );
 
 // 最小输入次数：5*1+1*1
