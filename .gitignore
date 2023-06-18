@@ -492,3 +492,4 @@ Vivado/Vivado.cache/*
 !*.bmm
 !*.xmp
 
+**/Vivado.cache
