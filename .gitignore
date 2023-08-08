@@ -493,3 +493,4 @@ Vivado/Vivado.cache/*
 !*.xmp
 
 **/Vivado.cache
+.vs
