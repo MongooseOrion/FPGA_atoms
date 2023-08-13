@@ -79,7 +79,7 @@ always @(posedge sys_clk or negedge sys_rst) begin
         work_en <= 1'b0;
     end
     else begin
-        work_en <= 1'b0;
+        work_en <= work_en;
     end
 end
 
@@ -92,11 +92,11 @@ always @(posedge sys_clk or negedge sys_rst) begin
     else if (work_en == 1'b1) begin
         bit_cnt <= bit_cnt + 1'b1;
     end
-    else if (work_en == 1'b0 || bit_cnt == BIT_CNT_MAX - 1) begin
+    else if ((work_en == 1'b0) || (bit_cnt == BIT_CNT_MAX - 1)) begin
         bit_cnt <= 13'b0;
     end
     else begin
-        bit_cnt <= 13'b0;
+        bit_cnt <= bit_cnt;
     end
 end
 
@@ -135,7 +135,7 @@ always @(posedge sys_clk or negedge sys_rst) begin
         rx_data <= 0;
     end
     // 第 0 个是起始位，第 9 个是结束位，只要 1-8 位是有效数据
-    else if ((bit_cnt > 'd0) && (bit_cnt < 'd9) && (bit_flag == 1'b1)) begin
+    else if ((recv_bit_cnt > 'd0) && (recv_bit_cnt < 'd9) && (bit_flag == 1'b1)) begin
         rx_data <= {rx_reg3, rx_data[7:1]}          // 赋给最高位7，7:1位整体右移为6:0，移 7 次
     end
     else begin
