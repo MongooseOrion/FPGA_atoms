@@ -21,10 +21,10 @@ module sdram_init #()(
     input               sys_clk,    // 100MHz
     input               sys_rst,
 
-    output reg [3:0]    init_cmd,
-    output reg [1:0]    init_ba,
-    output reg [12:0]   init_addr,
-    output              init_end
+    output reg [3:0]    init_cmd,   // 初始化后写入 SDRAM 的指令
+    output reg [1:0]    init_ba,    // 初始化后 Bank 地址
+    output reg [12:0]   init_addr,  // 地址总线
+    output              init_end    // 初始化结束信号
 );
 
 localparam  T_POWER = 15'd20_000;   // 设置上电时钟等待 200us
@@ -34,18 +34,18 @@ localparam  P_CHARGE = 4'b0010,     // 预充电指令
             M_REG_SET = 4'b0000 ;   // 模式寄存器设置指令
 
 // SDRAM初始化过程各个状态
-localparam  INIT_IDLE = 3'b000 ,    //初始状态
-            INIT_PRE = 3'b001 ,     //预充电状态
-            INIT_TRP = 3'b011 ,     //预充电等待 tRP
-            INIT_AR = 3'b010 ,      //自动刷新
-            INIT_TRF = 3'b100 ,     //自动刷新等待 tRC
-            INIT_MRS = 3'b101 ,     //模式寄存器设置
-            INIT_TMRD = 3'b111 ,    //模式寄存器设置等待 tMRD
-            INIT_END = 3'b110 ;     //初始化完成
-
-localparam  TRP_CLK = 3'd2 ,        //预充电等待周期,20ns
-            TRC_CLK = 3'd7 ,        //自动刷新等待,70ns
-            TMRD_CLK = 3'd3 ;       //模式寄存器设置等待周期,30ns
+localparam  INIT_IDLE = 3'b000 ,    // 初始状态
+            INIT_PRE = 3'b001 ,     // 预充电状态
+            INIT_TRP = 3'b011 ,     // 预充电等待 tRP
+            INIT_AR = 3'b010 ,      // 自动刷新
+            INIT_TRF = 3'b100 ,     // 自动刷新等待 tRC
+            INIT_MRS = 3'b101 ,     // 模式寄存器设置
+            INIT_TMRD = 3'b111 ,    // 模式寄存器设置等待 tMRD
+            INIT_END = 3'b110 ;     // 初始化完成
+// 预设的等待时钟周期
+localparam  TRP_CLK = 3'd2 ,        // 预充电等待周期, 20ns
+            TRC_CLK = 3'd7 ,        // 自动刷新等待, 70ns
+            TMRD_CLK = 3'd3 ;       // 模式寄存器设置等待周期, 30ns
 
 
 wire        wait_end;
@@ -192,6 +192,9 @@ end
 
 
 // SDRAM 操作指令控制
+// 初始化阶段逻辑 Bank 地址 init_ba、初始化阶段地址总线 init_addr，当状态机处于
+// 配置模式寄存器状态(INIT_MRS)时，分别写入逻辑Bank地址和模式寄存器配置的相关参数，
+// 其他状态二者均写入全 1。
 always@(posedge sys_clk or negedge sys_rst_n) begin
     if(sys_rst_n == 1'b0) begin
         init_cmd <= NOP;

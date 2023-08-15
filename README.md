@@ -46,3 +46,11 @@
 ### uart_recv
 
 该工程用以验证 uart 发送端和接收端是否能正常工作。
+
+### ddr_controller
+
+该模块用以控制 DDR，具体的排列方式可参考下述表格：
+```
+  |-- ddr_controller
+    |-- sdram_init          // ddr 初始化模块
+```
