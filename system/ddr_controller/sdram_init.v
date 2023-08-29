@@ -16,7 +16,7 @@
 //
 //
 
-module sdram_init #()(
+module sdram_init (
 
     input               sys_clk,    // 100MHz
     input               sys_rst,
@@ -78,7 +78,7 @@ always @(posedge sys_clk or negedge sys_rst) begin
         cnt_200us <= cnt_200us + 1'b1;
     end
     else begin
-        cnt_200us <= cnt_200us
+        cnt_200us <= cnt_200us;
     end
 end
 assign wait_end = (cnt_200us == T_POWER - 1'b1) ? 1'b1 : 1'b0; // 上电后 200us 等待结束标志
@@ -195,8 +195,8 @@ end
 // 初始化阶段逻辑 Bank 地址 init_ba、初始化阶段地址总线 init_addr，当状态机处于
 // 配置模式寄存器状态(INIT_MRS)时，分别写入逻辑Bank地址和模式寄存器配置的相关参数，
 // 其他状态二者均写入全 1。
-always@(posedge sys_clk or negedge sys_rst_n) begin
-    if(sys_rst_n == 1'b0) begin
+always@(posedge sys_clk or negedge sys_rst) begin
+    if(sys_rst == 1'b0) begin
         init_cmd <= NOP;
         init_ba <= 2'b11;
         init_addr <= 13'h1fff;

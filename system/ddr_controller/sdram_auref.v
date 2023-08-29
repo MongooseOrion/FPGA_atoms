@@ -25,7 +25,7 @@ module sdram_auref(
 );
 
 // 自动刷新等待时钟
-localparam CNT_REF_MAX = 10'd749    // 7.5us
+localparam CNT_REF_MAX = 10'd749;   // 7.5us
 // 定义各状态
 localparam  AREF_IDLE = 3'b000 ,    // 初始状态,等待自动刷新使能
             AREF_PCHA = 3'b001 ,    // 预充电状态
@@ -77,7 +77,7 @@ end
 // 周期计数，以周期性执行自动刷新操作
 always @(posedge sys_clk or negedge sys_rst) begin
     if(!sys_rst) begin
-        cnt_ref <= 0
+        cnt_ref <= 0;
     end
     else if (init_end) begin
         cnt_ref <= cnt_ref + 1'b1;
@@ -99,7 +99,7 @@ always @(posedge sys_clk or negedge sys_rst) begin
     else if (cnt_ref == CNT_REF_MAX - 1'b1) begin
         aref_req <= 1'b1;
     end
-    else if (aref_ack)begin
+    else if (aref_act) begin
         aref_req <= 1'b0;
     end
     else begin
@@ -166,9 +166,9 @@ always @(posedge sys_clk or negedge sys_rst) begin
                 else begin
                     aref_state <= aref_state;
                 end
+            end
             AREF_END: begin
                 aref_state <= AREF_IDLE;
-            end
             end
             default: begin
                 aref_state <= AREF_IDLE;
@@ -191,8 +191,8 @@ end
 
 
 // SDRAM操作指令控制
-always@(posedge sys_clk or negedge sys_rst_n) begin
-    if(sys_rst_n == 1'b0) begin
+always@(posedge sys_clk or negedge sys_rst) begin
+    if(sys_rst == 1'b0) begin
         aref_cmd <= NOP;
         aref_ba <= 2'b11;
         aref_addr <= 13'h1fff;

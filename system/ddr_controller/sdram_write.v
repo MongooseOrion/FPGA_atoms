@@ -25,7 +25,7 @@ module sdram_write(
     output reg  [1:0]   write_ba,
     output reg  [12:0]  write_addr,
     output reg          wr_sdram_en,
-    output reg  [15:0]  wr_sdram_data
+    output      [15:0]  wr_sdram_data
 );
 
 // 定义各状态参数
@@ -39,7 +39,7 @@ localparam  WR_IDLE = 4'b0000 ,     //初始状态
             WR_END = 4'b0110 ;      //一次突发写结束
 // 定义状态内保持的时钟周期数
 localparam  TRCD_CLK = 10'd2,
-            TRP_CLK = 10'd2, 
+            TRP_CLK = 10'd2;
 // 定义输出状态类型
 localparam  NOP = 4'b0111 ,         //空操作指令
             ACTIVE = 4'b0011 ,      //激活指令
@@ -79,7 +79,7 @@ always @(posedge sys_clk or negedge sys_rst) begin
     if(!sys_rst) begin
         cnt_clk <= 0;
     end
-    else if (cnt_rst) begin
+    else if (cnt_clk_rst) begin
         cnt_clk <= 10'b0;
     end
     else begin
@@ -133,7 +133,7 @@ always @(posedge sys_clk or negedge sys_rst) begin
                     write_state <= WR_END;
                 end
                 else begin
-                    write_state;
+                    write_state <= write_state;
                 end
             end
             WR_END: begin
@@ -161,7 +161,7 @@ end
 
 
 // 输出指令、逻辑 Bank 地址和地址总线信号
-always @(posedge sys_clk nor negedge sys_rst) begin
+always @(posedge sys_clk or negedge sys_rst) begin
     if(sys_rst) begin
         write_cmd <= 0;
         write_ba <= 0;
@@ -182,7 +182,7 @@ always @(posedge sys_clk nor negedge sys_rst) begin
             WR_WRITE: begin
                 write_cmd <= WRITE;
                 write_ba <= wr_addr[23:22];     
-                write_addr <= wr_addr{4'b0000, wr_addr[8:0]}// 写入列首地址
+                write_addr <= {4'b0000, wr_addr[8:0]};// 写入列首地址
             end
             WR_DATA: begin                      // 突发传输终止
                 if(twrite_end == 1'b1) begin    // 如果写状态保持了突发长度个周期，则发送突发终止指令
@@ -216,12 +216,12 @@ end
 
 // 数据总线输出使能
 // SDRAM 此时作输入功能
-always@(posedge sys_clk or negedge sys_rst_n) begin
+always@(posedge sys_clk or negedge sys_rst) begin
     if(!sys_rst) begin
         wr_sdram_en <= 1'b0;
     end
     else begin
-        wr_sdram_en <= wr_ack;
+        wr_sdram_en <= wr_act;
     end
 end
 
