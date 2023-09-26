@@ -3,7 +3,8 @@
 //
 
 module uart_recv #(
-    parameter UART_BOT = 'd9600
+    parameter CLK_FEQ = 26'd50_000_000,
+    parameter UART_BOT = 15'd9600
 ) (
     input               sys_clk,            // 50MHz
     input               sys_rst,
@@ -13,7 +14,7 @@ module uart_recv #(
 );
 
 // 定义每一 bit 的有效接收时长
-localparam BIT_CNT_MAX = 'd50_000_000 / UART_BOT ;
+localparam BIT_CNT_MAX = CLK_FEQ / UART_BOT ;
 
 reg         rx_reg1 ;
 reg         rx_reg2 ;
@@ -106,7 +107,7 @@ always @(posedge sys_clk or negedge sys_rst) begin
     if(!sys_rst) begin
         bit_flag <= 0;
     end
-    else if (bit_cnt == BIT_CNT_MAX/2 - 1) begin
+    else if (bit_cnt == BIT_CNT_MAX/2 - 1'b1) begin
         bit_flag <= 1'b1;
     end
     else begin
@@ -136,7 +137,7 @@ always @(posedge sys_clk or negedge sys_rst) begin
     end
     // 第 0 个是起始位，第 9 个是结束位，只要 1-8 位是有效数据
     else if ((recv_bit_cnt > 'd0) && (recv_bit_cnt < 'd9) && (bit_flag == 1'b1)) begin
-        rx_data <= {rx_reg3, rx_data[7:1]}          // 赋给最高位7，7:1位整体右移为6:0，移 7 次
+        rx_data <= {rx_reg3, rx_data[7:1]};          // 赋给最高位7，7:1位整体右移为6:0，移 7 次
     end
     else begin
         rx_data <= 8'b0;

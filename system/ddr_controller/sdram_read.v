@@ -70,6 +70,8 @@ assign tread_end = ((read_state == RD_DATA) && (cnt_clk == rd_burst_len + 'd2)) 
 assign trp_end = (cnt_clk == TRP_CLK) ? 1'b1 : 1'b0;
 
 // 控制突发终止指令写入
+// 读突发 SDRAM 字节数，读取指令送入到有效数据读出有 3 个时钟周期延迟，所以要求读取 rd_burst_len 位
+// 数据就应该在进入 RD_DATA 状态后 rd_burst_len - 1 - 3 个时钟拉高结束信号
 assign rd_burst_end = ((read_state == RD_DATA) && (cnt_clk == rd_burst_len - 'd4)) ? 1'b1 : 1'b0;
 
 
@@ -154,7 +156,11 @@ always @(posedge sys_clk or negedge sys_rst) begin
 end
 
 
-// s
+// 计数时钟清零信号设计
+/*always @(*) begin
+    case(read_state)
+
+end*/
 
 
 

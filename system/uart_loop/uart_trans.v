@@ -51,7 +51,8 @@ always @(posedge sys_clk or negedge sys_rst) begin
         bit_cnt <= 13'b0;
     end
     else begin
-        bit_cnt <= bit_cnt
+        bit_cnt <= bit_cnt;
+    end
 end
 
 
@@ -71,7 +72,7 @@ end
 
 // 每字节数据 bit 计数，每字节应该有 10bit 数据
 always @(posedge sys_clk or negedge sys_rst) begin
-    if(!sys_clk) begin
+    if(!sys_rst) begin
         trans_bit_cnt <= 0;
     end
     else if ((bit_flag == 1'b1) && (trans_bit_cnt < 'd10)) begin // 传输第一位是索引号 1，而不是 0
@@ -88,12 +89,12 @@ end
 
 // 输出每字节数据
 always @(posedge sys_clk or negedge sys_rst) begin
-    if(!sys_clk) begin
+    if(!sys_rst) begin
         tx_data <= 0;
     end
     else if (bit_flag == 1'b1) begin
         case (trans_bit_cnt)
-            0:      1'b0;
+            0:      tx_data <= 1'b0;
             1:      tx_data <= trans_data[0];   // 起始位
             2:      tx_data <= trans_data[1];   // 有效数据[1:8]
             3:      tx_data <= trans_data[2];
