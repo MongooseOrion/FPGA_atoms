@@ -31,6 +31,8 @@ module axi_master#(
     input                                   m_axi_aresetn,
 
     input       [M_AXI_DATA_WIDTH-1'b1:0]   data_in,
+    input                                   write_start;
+    input                                   read_start;
 
     // 写地址通道
     output      [M_AXI_ID_WIDTH-1'b1:0]     m_axi_awid,     // 写地址 ID
@@ -100,9 +102,12 @@ reg                             reg_m_axi_wvalid;
 reg [M_AXI_ADDR_WIDTH-1'b1:0]   reg_m_axi_araddr;
 reg                             reg_m_axi_arvalid;
 reg                             reg_m_axi_rready;
+reg [M_AXI_DATA_WIDTH-1'b1:0]   reg_m_axi_rdata;
+reg                             reg_m_axi_rlast;
 
-reg                             write_start;
+//reg                             write_start;
 reg [7:0]                       burst_data_cnt;
+//reg                             read_start;
 
 assign m_axi_awid = 'b0;
 assign m_axi_awaddr = reg_m_axi_awaddr + M_SLAVE_BASE_ADDR;
@@ -168,7 +173,7 @@ always @(posedge clk or negedge rst) begin
         reg_m_axi_awaddr <= 'd1;
     end
     else begin
-        reg_m_axi_awaddr <= 'd0;
+        reg_m_axi_awaddr <= reg_m_axi_awaddr;
     end
 end
 
@@ -208,7 +213,7 @@ end
 
 
 // 写数据计数
-// 只适用于突发长度大于 2 的情况
+// 只适用于突发长度大于等于 4 的情况
 always @(posedge clk or negedge rst) begin
     if(!rst) begin
         burst_data_cnt <= 8'b0;
@@ -239,6 +244,63 @@ end
 
 
 // 读地址有效信号
+always @(posedge clk or negedge rst) begin
+    if(!rst) begin
+        reg_m_axi_arvalid <= 'b0;
+    end
+    else if(read_start) begin
+        reg_m_axi_arvalid <= 1'b1;
+    end
+    else if((m_axi_arvalid == 1'b1) && (m_axi_arready == 1'b1)) begin
+        reg_m_axi_arvalid <= 1'b0;
+    end
+    else begin
+        reg_m_axi_arvalid <= reg_m_axi_arvalid;
+    end
+end
+
+
+// 读地址信号
+always @(posedge clk or negedge rst) begin
+    if(!rst) begin
+        reg_m_axi_araddr <= 'b0;
+    end
+    else if(read_start) begin
+        reg_m_axi_araddr <= 'b1;
+    end
+    else begin
+        reg_m_axi_araddr <= reg_m_axi_araddr;
+    end
+end
+
+
+// 读数据准备
+always @(posedge clk or negedge rst) begin
+    if(!rst) begin
+        reg_m_axi_rready <= 'b0;
+    end
+    else if((m_axi_arvalid == 1'b1) && (m_axi_arready == 1'b1)) begin
+        reg_m_axi_rready <= 1'b1;
+    end
+    else if(m_axi_rlast) begin
+        reg_m_axi_rready <= 1'b0;
+    end
+end
+
+
+// 读数据信号
+always @(posedge clk or negedge rst) begin
+    if(!rst) begin
+        reg_m_axi_rdata <= 'b0;
+    end
+    else if((m_axi_rvalid == 1'b1) && (m_axi_rready == 1'b1)) begin
+        reg_m_axi_rdata <= m_axi_rdata;
+    end
+    else begin
+        reg_m_axi_rdata <= reg_m_axi_rdata;
+    end
+end
+
 
 
 endmodule
