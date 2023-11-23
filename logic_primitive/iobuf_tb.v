@@ -17,7 +17,7 @@ IOBUF IOBUF_u(
 );
 
 always #(CLK_PERIOD/2) clk = ~clk;
-always T = 1;
+assign T = 1;
 
 initial begin
     I <= 0;
@@ -35,6 +35,6 @@ initial begin
     #1000;
     IO <= 1;
     I <= 1;
-
-
 end
+
+endmodule

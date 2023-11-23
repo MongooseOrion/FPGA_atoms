@@ -31,8 +31,8 @@ module axi_master#(
     input                                   m_axi_aresetn,
 
     input       [M_AXI_DATA_WIDTH-1'b1:0]   data_in,
-    input                                   write_start;
-    input                                   read_start;
+    input                                   write_start,
+    input                                   read_start,
 
     // 写地址通道
     output      [M_AXI_ID_WIDTH-1'b1:0]     m_axi_awid,     // 写地址 ID

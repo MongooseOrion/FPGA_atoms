@@ -1,0 +1,809 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="sim_1_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="sim_1" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="973043479fs"></ZoomEndTime>
+      <Cursor1Time time="420000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="248"></NameColumnWidth>
+      <ValueColumnWidth column_width="161"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="5" />
+   <wvobject fp_name="/sim_1/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sim_1/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/sim_1/txn" type="logic">
+      <obj_property name="ElementShortName">txn</obj_property>
+      <obj_property name="ObjectShortName">txn</obj_property>
+   </wvobject>
+   <wvobject fp_name="group356" type="group">
+      <obj_property name="label">m</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_awid" type="array">
+         <obj_property name="ElementShortName">m00_axi_awid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_awlen" type="array">
+         <obj_property name="ElementShortName">m00_axi_awlen[7:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awlen[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_awsize" type="array">
+         <obj_property name="ElementShortName">m00_axi_awsize[2:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awsize[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_awburst" type="array">
+         <obj_property name="ElementShortName">m00_axi_awburst[1:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awburst[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_awlock" type="logic">
+         <obj_property name="ElementShortName">m00_axi_awlock</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awlock</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_awcache" type="array">
+         <obj_property name="ElementShortName">m00_axi_awcache[3:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awcache[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_awprot" type="array">
+         <obj_property name="ElementShortName">m00_axi_awprot[2:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awprot[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_awqos" type="array">
+         <obj_property name="ElementShortName">m00_axi_awqos[3:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awqos[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_awuser" type="array">
+         <obj_property name="ElementShortName">m00_axi_awuser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awuser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_awvalid" type="logic">
+         <obj_property name="ElementShortName">m00_axi_awvalid</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_awready" type="logic">
+         <obj_property name="ElementShortName">m00_axi_awready</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_awaddr" type="array">
+         <obj_property name="ElementShortName">m00_axi_awaddr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awaddr[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_wdata" type="array">
+         <obj_property name="ElementShortName">m00_axi_wdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_wdata[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_wstrb" type="array">
+         <obj_property name="ElementShortName">m00_axi_wstrb[3:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_wstrb[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_wlast" type="logic">
+         <obj_property name="ElementShortName">m00_axi_wlast</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_wlast</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_wuser" type="array">
+         <obj_property name="ElementShortName">m00_axi_wuser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_wuser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_wvalid" type="logic">
+         <obj_property name="ElementShortName">m00_axi_wvalid</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_wvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_wready" type="logic">
+         <obj_property name="ElementShortName">m00_axi_wready</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_wready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_bid" type="array">
+         <obj_property name="ElementShortName">m00_axi_bid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_bid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_bresp" type="array">
+         <obj_property name="ElementShortName">m00_axi_bresp[1:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_bresp[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_buser" type="array">
+         <obj_property name="ElementShortName">m00_axi_buser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_buser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_bvalid" type="logic">
+         <obj_property name="ElementShortName">m00_axi_bvalid</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_bvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_bready" type="logic">
+         <obj_property name="ElementShortName">m00_axi_bready</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_bready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_arid" type="array">
+         <obj_property name="ElementShortName">m00_axi_arid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_arlen" type="array">
+         <obj_property name="ElementShortName">m00_axi_arlen[7:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arlen[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_arsize" type="array">
+         <obj_property name="ElementShortName">m00_axi_arsize[2:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arsize[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_arburst" type="array">
+         <obj_property name="ElementShortName">m00_axi_arburst[1:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arburst[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_arlock" type="logic">
+         <obj_property name="ElementShortName">m00_axi_arlock</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arlock</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_arcache" type="array">
+         <obj_property name="ElementShortName">m00_axi_arcache[3:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arcache[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_arprot" type="array">
+         <obj_property name="ElementShortName">m00_axi_arprot[2:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arprot[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_arqos" type="array">
+         <obj_property name="ElementShortName">m00_axi_arqos[3:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arqos[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_aruser" type="array">
+         <obj_property name="ElementShortName">m00_axi_aruser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_aruser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_arvalid" type="logic">
+         <obj_property name="ElementShortName">m00_axi_arvalid</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_arready" type="logic">
+         <obj_property name="ElementShortName">m00_axi_arready</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_araddr" type="array">
+         <obj_property name="ElementShortName">m00_axi_araddr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_araddr[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_rid" type="array">
+         <obj_property name="ElementShortName">m00_axi_rid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_rid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_rdata" type="array">
+         <obj_property name="ElementShortName">m00_axi_rdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_rdata[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_rresp" type="array">
+         <obj_property name="ElementShortName">m00_axi_rresp[1:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_rresp[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_rlast" type="logic">
+         <obj_property name="ElementShortName">m00_axi_rlast</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_rlast</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_ruser" type="array">
+         <obj_property name="ElementShortName">m00_axi_ruser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_ruser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_rvalid" type="logic">
+         <obj_property name="ElementShortName">m00_axi_rvalid</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_rvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_rready" type="logic">
+         <obj_property name="ElementShortName">m00_axi_rready</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_rready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_aclk" type="logic">
+         <obj_property name="ElementShortName">m00_axi_aclk</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_aclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_aresetn" type="logic">
+         <obj_property name="ElementShortName">m00_axi_aresetn</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_aresetn</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_init_axi_txn" type="logic">
+         <obj_property name="ElementShortName">m00_axi_init_axi_txn</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_init_axi_txn</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_txn_done" type="logic">
+         <obj_property name="ElementShortName">m00_axi_txn_done</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_txn_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/m00_axi_error" type="logic">
+         <obj_property name="ElementShortName">m00_axi_error</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awid" type="array">
+         <obj_property name="ElementShortName">s00_axi_awid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awaddr" type="array">
+         <obj_property name="ElementShortName">s00_axi_awaddr[5:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awaddr[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awlen" type="array">
+         <obj_property name="ElementShortName">s00_axi_awlen[7:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awlen[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awsize" type="array">
+         <obj_property name="ElementShortName">s00_axi_awsize[2:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awsize[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awburst" type="array">
+         <obj_property name="ElementShortName">s00_axi_awburst[1:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awburst[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awlock" type="logic">
+         <obj_property name="ElementShortName">s00_axi_awlock</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awlock</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awcache" type="array">
+         <obj_property name="ElementShortName">s00_axi_awcache[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awcache[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awprot" type="array">
+         <obj_property name="ElementShortName">s00_axi_awprot[2:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awprot[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awregion" type="array">
+         <obj_property name="ElementShortName">s00_axi_awregion[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awregion[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awqos" type="array">
+         <obj_property name="ElementShortName">s00_axi_awqos[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awqos[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awuser" type="array">
+         <obj_property name="ElementShortName">s00_axi_awuser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awuser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awvalid" type="logic">
+         <obj_property name="ElementShortName">s00_axi_awvalid</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_awready" type="logic">
+         <obj_property name="ElementShortName">s00_axi_awready</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_wdata" type="array">
+         <obj_property name="ElementShortName">s00_axi_wdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_wdata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_wstrb" type="array">
+         <obj_property name="ElementShortName">s00_axi_wstrb[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_wstrb[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_wlast" type="logic">
+         <obj_property name="ElementShortName">s00_axi_wlast</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_wlast</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_wuser" type="array">
+         <obj_property name="ElementShortName">s00_axi_wuser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_wuser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_wvalid" type="logic">
+         <obj_property name="ElementShortName">s00_axi_wvalid</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_wvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_wready" type="logic">
+         <obj_property name="ElementShortName">s00_axi_wready</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_wready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_bid" type="array">
+         <obj_property name="ElementShortName">s00_axi_bid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_bid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_bresp" type="array">
+         <obj_property name="ElementShortName">s00_axi_bresp[1:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_bresp[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_buser" type="array">
+         <obj_property name="ElementShortName">s00_axi_buser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_buser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_bvalid" type="logic">
+         <obj_property name="ElementShortName">s00_axi_bvalid</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_bvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_bready" type="logic">
+         <obj_property name="ElementShortName">s00_axi_bready</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_bready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_arid" type="array">
+         <obj_property name="ElementShortName">s00_axi_arid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_araddr" type="array">
+         <obj_property name="ElementShortName">s00_axi_araddr[5:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_araddr[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_arlen" type="array">
+         <obj_property name="ElementShortName">s00_axi_arlen[7:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arlen[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_arsize" type="array">
+         <obj_property name="ElementShortName">s00_axi_arsize[2:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arsize[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_arburst" type="array">
+         <obj_property name="ElementShortName">s00_axi_arburst[1:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arburst[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_arlock" type="logic">
+         <obj_property name="ElementShortName">s00_axi_arlock</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arlock</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_arcache" type="array">
+         <obj_property name="ElementShortName">s00_axi_arcache[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arcache[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_arprot" type="array">
+         <obj_property name="ElementShortName">s00_axi_arprot[2:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arprot[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_arregion" type="array">
+         <obj_property name="ElementShortName">s00_axi_arregion[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arregion[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_arqos" type="array">
+         <obj_property name="ElementShortName">s00_axi_arqos[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arqos[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_aruser" type="array">
+         <obj_property name="ElementShortName">s00_axi_aruser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_aruser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_arvalid" type="logic">
+         <obj_property name="ElementShortName">s00_axi_arvalid</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_arready" type="logic">
+         <obj_property name="ElementShortName">s00_axi_arready</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_rid" type="array">
+         <obj_property name="ElementShortName">s00_axi_rid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_rid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_rdata" type="array">
+         <obj_property name="ElementShortName">s00_axi_rdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_rdata[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_rresp" type="array">
+         <obj_property name="ElementShortName">s00_axi_rresp[1:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_rresp[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_rlast" type="logic">
+         <obj_property name="ElementShortName">s00_axi_rlast</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_rlast</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_ruser" type="array">
+         <obj_property name="ElementShortName">s00_axi_ruser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_ruser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_rvalid" type="logic">
+         <obj_property name="ElementShortName">s00_axi_rvalid</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_rvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_rready" type="logic">
+         <obj_property name="ElementShortName">s00_axi_rready</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_rready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_aclk" type="logic">
+         <obj_property name="ElementShortName">s00_axi_aclk</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_aclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/s00_axi_aresetn" type="logic">
+         <obj_property name="ElementShortName">s00_axi_aresetn</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_aresetn</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/M00_AXI" type="protoinst">
+         <obj_property name="ElementShortName">M00_AXI</obj_property>
+         <obj_property name="ObjectShortName">M00_AXI</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_0/S00_AXI" type="protoinst">
+         <obj_property name="ElementShortName">S00_AXI</obj_property>
+         <obj_property name="ObjectShortName">S00_AXI</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group504" type="group">
+      <obj_property name="label">s</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_awid" type="array">
+         <obj_property name="ElementShortName">m00_axi_awid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_awaddr" type="array">
+         <obj_property name="ElementShortName">m00_axi_awaddr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awaddr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_awlen" type="array">
+         <obj_property name="ElementShortName">m00_axi_awlen[7:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awlen[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_awsize" type="array">
+         <obj_property name="ElementShortName">m00_axi_awsize[2:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awsize[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_awburst" type="array">
+         <obj_property name="ElementShortName">m00_axi_awburst[1:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awburst[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_awlock" type="logic">
+         <obj_property name="ElementShortName">m00_axi_awlock</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awlock</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_awcache" type="array">
+         <obj_property name="ElementShortName">m00_axi_awcache[3:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awcache[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_awprot" type="array">
+         <obj_property name="ElementShortName">m00_axi_awprot[2:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awprot[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_awqos" type="array">
+         <obj_property name="ElementShortName">m00_axi_awqos[3:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awqos[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_awuser" type="array">
+         <obj_property name="ElementShortName">m00_axi_awuser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awuser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_awvalid" type="logic">
+         <obj_property name="ElementShortName">m00_axi_awvalid</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_awready" type="logic">
+         <obj_property name="ElementShortName">m00_axi_awready</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_awready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_wdata" type="array">
+         <obj_property name="ElementShortName">m00_axi_wdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_wdata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_wstrb" type="array">
+         <obj_property name="ElementShortName">m00_axi_wstrb[3:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_wstrb[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_wlast" type="logic">
+         <obj_property name="ElementShortName">m00_axi_wlast</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_wlast</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_wuser" type="array">
+         <obj_property name="ElementShortName">m00_axi_wuser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_wuser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_wvalid" type="logic">
+         <obj_property name="ElementShortName">m00_axi_wvalid</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_wvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_wready" type="logic">
+         <obj_property name="ElementShortName">m00_axi_wready</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_wready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_bid" type="array">
+         <obj_property name="ElementShortName">m00_axi_bid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_bid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_bresp" type="array">
+         <obj_property name="ElementShortName">m00_axi_bresp[1:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_bresp[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_buser" type="array">
+         <obj_property name="ElementShortName">m00_axi_buser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_buser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_bvalid" type="logic">
+         <obj_property name="ElementShortName">m00_axi_bvalid</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_bvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_bready" type="logic">
+         <obj_property name="ElementShortName">m00_axi_bready</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_bready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_arid" type="array">
+         <obj_property name="ElementShortName">m00_axi_arid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_araddr" type="array">
+         <obj_property name="ElementShortName">m00_axi_araddr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_araddr[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_arlen" type="array">
+         <obj_property name="ElementShortName">m00_axi_arlen[7:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arlen[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_arsize" type="array">
+         <obj_property name="ElementShortName">m00_axi_arsize[2:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arsize[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_arburst" type="array">
+         <obj_property name="ElementShortName">m00_axi_arburst[1:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arburst[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_arlock" type="logic">
+         <obj_property name="ElementShortName">m00_axi_arlock</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arlock</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_arcache" type="array">
+         <obj_property name="ElementShortName">m00_axi_arcache[3:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arcache[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_arprot" type="array">
+         <obj_property name="ElementShortName">m00_axi_arprot[2:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arprot[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_arqos" type="array">
+         <obj_property name="ElementShortName">m00_axi_arqos[3:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arqos[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_aruser" type="array">
+         <obj_property name="ElementShortName">m00_axi_aruser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_aruser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_arvalid" type="logic">
+         <obj_property name="ElementShortName">m00_axi_arvalid</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_arready" type="logic">
+         <obj_property name="ElementShortName">m00_axi_arready</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_arready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_rid" type="array">
+         <obj_property name="ElementShortName">m00_axi_rid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_rid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_rdata" type="array">
+         <obj_property name="ElementShortName">m00_axi_rdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_rdata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_rresp" type="array">
+         <obj_property name="ElementShortName">m00_axi_rresp[1:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_rresp[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_rlast" type="logic">
+         <obj_property name="ElementShortName">m00_axi_rlast</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_rlast</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_ruser" type="array">
+         <obj_property name="ElementShortName">m00_axi_ruser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_ruser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_rvalid" type="logic">
+         <obj_property name="ElementShortName">m00_axi_rvalid</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_rvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_rready" type="logic">
+         <obj_property name="ElementShortName">m00_axi_rready</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_rready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_aclk" type="logic">
+         <obj_property name="ElementShortName">m00_axi_aclk</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_aclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_aresetn" type="logic">
+         <obj_property name="ElementShortName">m00_axi_aresetn</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_aresetn</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_init_axi_txn" type="logic">
+         <obj_property name="ElementShortName">m00_axi_init_axi_txn</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_init_axi_txn</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_txn_done" type="logic">
+         <obj_property name="ElementShortName">m00_axi_txn_done</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_txn_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/m00_axi_error" type="logic">
+         <obj_property name="ElementShortName">m00_axi_error</obj_property>
+         <obj_property name="ObjectShortName">m00_axi_error</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awid" type="array">
+         <obj_property name="ElementShortName">s00_axi_awid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awaddr" type="array">
+         <obj_property name="ElementShortName">s00_axi_awaddr[5:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awaddr[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awlen" type="array">
+         <obj_property name="ElementShortName">s00_axi_awlen[7:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awlen[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awsize" type="array">
+         <obj_property name="ElementShortName">s00_axi_awsize[2:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awsize[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awburst" type="array">
+         <obj_property name="ElementShortName">s00_axi_awburst[1:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awburst[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awlock" type="logic">
+         <obj_property name="ElementShortName">s00_axi_awlock</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awlock</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awcache" type="array">
+         <obj_property name="ElementShortName">s00_axi_awcache[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awcache[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awprot" type="array">
+         <obj_property name="ElementShortName">s00_axi_awprot[2:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awprot[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awregion" type="array">
+         <obj_property name="ElementShortName">s00_axi_awregion[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awregion[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awqos" type="array">
+         <obj_property name="ElementShortName">s00_axi_awqos[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awqos[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awuser" type="array">
+         <obj_property name="ElementShortName">s00_axi_awuser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awuser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awvalid" type="logic">
+         <obj_property name="ElementShortName">s00_axi_awvalid</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_awready" type="logic">
+         <obj_property name="ElementShortName">s00_axi_awready</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_awready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_wdata" type="array">
+         <obj_property name="ElementShortName">s00_axi_wdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_wdata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_wstrb" type="array">
+         <obj_property name="ElementShortName">s00_axi_wstrb[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_wstrb[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_wlast" type="logic">
+         <obj_property name="ElementShortName">s00_axi_wlast</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_wlast</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_wuser" type="array">
+         <obj_property name="ElementShortName">s00_axi_wuser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_wuser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_wvalid" type="logic">
+         <obj_property name="ElementShortName">s00_axi_wvalid</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_wvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_wready" type="logic">
+         <obj_property name="ElementShortName">s00_axi_wready</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_wready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_bid" type="array">
+         <obj_property name="ElementShortName">s00_axi_bid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_bid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_bresp" type="array">
+         <obj_property name="ElementShortName">s00_axi_bresp[1:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_bresp[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_buser" type="array">
+         <obj_property name="ElementShortName">s00_axi_buser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_buser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_bvalid" type="logic">
+         <obj_property name="ElementShortName">s00_axi_bvalid</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_bvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_bready" type="logic">
+         <obj_property name="ElementShortName">s00_axi_bready</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_bready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_arid" type="array">
+         <obj_property name="ElementShortName">s00_axi_arid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_araddr" type="array">
+         <obj_property name="ElementShortName">s00_axi_araddr[5:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_araddr[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_arlen" type="array">
+         <obj_property name="ElementShortName">s00_axi_arlen[7:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arlen[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_arsize" type="array">
+         <obj_property name="ElementShortName">s00_axi_arsize[2:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arsize[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_arburst" type="array">
+         <obj_property name="ElementShortName">s00_axi_arburst[1:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arburst[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_arlock" type="logic">
+         <obj_property name="ElementShortName">s00_axi_arlock</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arlock</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_arcache" type="array">
+         <obj_property name="ElementShortName">s00_axi_arcache[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arcache[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_arprot" type="array">
+         <obj_property name="ElementShortName">s00_axi_arprot[2:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arprot[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_arregion" type="array">
+         <obj_property name="ElementShortName">s00_axi_arregion[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arregion[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_arqos" type="array">
+         <obj_property name="ElementShortName">s00_axi_arqos[3:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arqos[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_aruser" type="array">
+         <obj_property name="ElementShortName">s00_axi_aruser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_aruser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_arvalid" type="logic">
+         <obj_property name="ElementShortName">s00_axi_arvalid</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_arready" type="logic">
+         <obj_property name="ElementShortName">s00_axi_arready</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_arready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_rid" type="array">
+         <obj_property name="ElementShortName">s00_axi_rid[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_rid[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_rdata" type="array">
+         <obj_property name="ElementShortName">s00_axi_rdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_rdata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_rresp" type="array">
+         <obj_property name="ElementShortName">s00_axi_rresp[1:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_rresp[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_rlast" type="logic">
+         <obj_property name="ElementShortName">s00_axi_rlast</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_rlast</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_ruser" type="array">
+         <obj_property name="ElementShortName">s00_axi_ruser[0:0]</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_ruser[0:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_rvalid" type="logic">
+         <obj_property name="ElementShortName">s00_axi_rvalid</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_rvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_rready" type="logic">
+         <obj_property name="ElementShortName">s00_axi_rready</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_rready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_aclk" type="logic">
+         <obj_property name="ElementShortName">s00_axi_aclk</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_aclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/s00_axi_aresetn" type="logic">
+         <obj_property name="ElementShortName">s00_axi_aresetn</obj_property>
+         <obj_property name="ObjectShortName">s00_axi_aresetn</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/M00_AXI" type="protoinst">
+         <obj_property name="ElementShortName">M00_AXI</obj_property>
+         <obj_property name="ObjectShortName">M00_AXI</obj_property>
+      </wvobject>
+      <wvobject fp_name="/sim_1/u_design_1/axi_full_1/S00_AXI" type="protoinst">
+         <obj_property name="ElementShortName">S00_AXI</obj_property>
+         <obj_property name="ObjectShortName">S00_AXI</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
