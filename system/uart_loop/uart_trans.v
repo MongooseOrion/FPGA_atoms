@@ -1,118 +1,97 @@
-//
-// UART ∑¢ÀÕƒ£øÈ
-//
-//
-module uart_trans #(
-    parameter UART_BOT = 'd9600
-)(
-    input               sys_clk,
-    input               sys_rst,
-
-    input      [7:0]    trans_data,
-    input               trans_valid,
-
-    output reg          tx_data
+/* =======================================================================
+* Copyright (c) 2023, MongooseOrion.
+* All rights reserved.
+*
+* The following code snippet may contain portions that are derived from
+* OPEN-SOURCE communities, and these portions will be licensed with: 
+*
+* <NULL>
+*
+* If there is no OPEN-SOURCE licenses are listed, it indicates none of
+* content in this Code document is sourced from OPEN-SOURCE communities. 
+*
+* In this case, the document is protected by copyright, and any use of
+* all or part of its content by individuals, organizations, or companies
+* without authorization is prohibited, unless the project repository
+* associated with this document has added relevant OPEN-SOURCE licenses
+* by github.com/MongooseOrion. 
+*
+* Please make sure using the content of this document in accordance with 
+* the respective OPEN-SOURCE licenses. 
+* 
+* THIS CODE IS PROVIDED BY https://github.com/MongooseOrion. 
+* FILE ENCODER TYPE: UTF-8
+* ========================================================================
+*/
+// UART Êåá‰ª§ÊéßÂà∂Ê®°Âùó
+// 
+module uart_trans(
+    input           clk,
+    input           rst,  
+    input           uart_rx,
+    input   [7:0]   command_in, 
+    input           command_in_flag,  
+    output          uart_tx,
+    output  [3:0]   ctrl_command_out/*synthesis PAP_MARK_DEBUG="1"*/,
+    output  [3:0]   value_command_out/*synthesis PAP_MARK_DEBUG="1"*/,
+    output reg      command_out_flag/*synthesis PAP_MARK_DEBUG="1"*/
 );
 
-localparam  BIT_CNT_MAX = 'd50_000_000 / UART_BOT;
+wire            data_out_flag;
+wire [7:0]      command_out;
 
-reg         work_en;
-reg [12:0]  bit_cnt;
-reg         bit_flag;
-reg [3:0]   trans_bit_cnt;
+reg [3:0]       reg_ctrl_command;
+reg [3:0]       reg_value_command;
+
+assign ctrl_command_out = reg_ctrl_command;
+assign value_command_out = reg_value_command;
 
 
-// ∑¢ÀÕ πƒ‹–≈∫≈
-always @(posedge sys_clk or negedge sys_rst) begin
-    if(!sys_clk) begin
-        work_en <= 0;
-    end
-    else if (trans_valid == 1'b1) begin
-        work_en <= 1'b1;
-    end
-    else if ((bit_flag == 1'b1) && (bit_cnt == 'd9))begin
-        work_en <= 1'b0;
+// ‰ªéÁîµËÑëÊé•Êî∂ÊéßÂà∂‰ø°Âè∑
+uart_rx command_recv(
+    .clk            (clk),
+    .rst            (rst),
+    .data_out       (command_out),
+    .data_out_flag  (data_out_flag),
+    .uart_rx        (uart_rx)
+);
+
+// Âª∂Ëøü‰∏Ä‰∏™Âë®Êúü
+always @(posedge clk or negedge rst) begin
+    if(!rst) begin
+        command_out_flag <= 'b0;
     end
     else begin
-        work_en <= work_en;
+        command_out_flag <= data_out_flag;
     end
 end
 
 
-// √ø“ª bit  ˝æ›◊Ó¥Û”––ß ±≥§º∆ ˝
-always @(posedge sys_clk or negedge sys_rst) begin
-    if(!sys_clk) begin
-        bit_cnt <= 0;
+// ÊéßÂà∂‰ø°Âè∑Âè™ÊúâÊïà‰∏Ä‰∏™Êó∂ÈíüÂë®Êúü
+always @(posedge clk or negedge rst) begin
+    if(!rst) begin
+        reg_ctrl_command <= 'b0;
+        reg_value_command <= 'b0;
     end
-    else if (work_en == 1'b1) begin
-        bit_cnt <= bit_cnt + 1'b1;
-    end
-    else if ((bit_cnt == BIT_CNT_MAX -1) || (work_en == 1'b0))begin
-        bit_cnt <= 13'b0;
+    else if(data_out_flag) begin
+        reg_ctrl_command <= command_out[7:4];
+        reg_value_command <= command_out[3:0];
     end
     else begin
-        bit_cnt <= bit_cnt;
+        reg_ctrl_command <= reg_ctrl_command;
+        reg_value_command <= 4'b0;
     end
 end
 
 
-// æˆ∂®Ω” ’“ªŒª ˝æ›µƒŒª÷√£¨’‚¿Ô…Ë÷√Œ™”––ß ±≥§÷–≤øŒª÷√
-always @(posedge sys_clk or negedge sys_rst) begin
-    if(!sys_clk) begin
-        bit_flag <= 0;
-    end
-    else if (bit_cnt == BIT_CNT_MAX/2 - 1) begin
-        bit_flag <= 1'b1;
-    end
-    else begin
-        bit_flag <= 1'b0;
-    end
-end
-
-
-// √ø◊÷Ω⁄ ˝æ› bit º∆ ˝£¨√ø◊÷Ω⁄”¶∏√”– 10bit  ˝æ›
-always @(posedge sys_clk or negedge sys_rst) begin
-    if(!sys_rst) begin
-        trans_bit_cnt <= 0;
-    end
-    else if ((bit_flag == 1'b1) && (trans_bit_cnt < 'd10)) begin // ¥´ ‰µ⁄“ªŒª «À˜“˝∫≈ 1£¨∂¯≤ª « 0
-        trans_bit_cnt <= trans_bit_cnt + 1'b1;
-    end
-    else if ((trans_bit_cnt == 'd10) && (bit_flag == 1'b1)) begin
-        trans_bit_cnt <= 4'b0;
-    end
-    else begin
-        trans_bit_cnt <= trans_bit_cnt;
-    end
-end
-
-
-//  ‰≥ˆ√ø◊÷Ω⁄ ˝æ›
-always @(posedge sys_clk or negedge sys_rst) begin
-    if(!sys_rst) begin
-        tx_data <= 0;
-    end
-    else if (bit_flag == 1'b1) begin
-        case (trans_bit_cnt)
-            0:      tx_data <= 1'b0;
-            1:      tx_data <= trans_data[0];   // ∆ ºŒª
-            2:      tx_data <= trans_data[1];   // ”––ß ˝æ›[1:8]
-            3:      tx_data <= trans_data[2];
-            4:      tx_data <= trans_data[3];
-            5:      tx_data <= trans_data[4];
-            6:      tx_data <= trans_data[5];
-            7:      tx_data <= trans_data[6];
-            8:      tx_data <= trans_data[7];
-            9:      tx_data <= trans_data[8];
-            10:     tx_data <= 1'b1;
-            default:tx_data <= 1'b1;
-        endcase
-    end 
-    else begin
-        tx_data <= 1'b0;
-    end
-end
-
+// Êùø‰∏äÂèçÈ¶à‰ø°ÊÅØ
+uart_tx command_deliver(
+    .clk            (clk),
+    .rst            (rst),
+    .data_in        (command_in),
+    .data_in_flag   (command_in_flag),
+    .uart_tx        (uart_tx)
+);
 
 
 endmodule

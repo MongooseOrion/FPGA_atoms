@@ -1,6 +1,31 @@
-`timescale 1ns / 1ps
-`define UD #1
-
+/* =======================================================================
+* Copyright (c) 2023, MongooseOrion.
+* All rights reserved.
+*
+* The following code snippet may contain portions that are derived from
+* OPEN-SOURCE communities, and these portions will be licensed with: 
+*
+* <NULL>
+*
+* If there is no OPEN-SOURCE licenses are listed, it indicates none of
+* content in this Code document is sourced from OPEN-SOURCE communities. 
+*
+* In this case, the document is protected by copyright, and any use of
+* all or part of its content by individuals, organizations, or companies
+* without authorization is prohibited, unless the project repository
+* associated with this document has added relevant OPEN-SOURCE licenses
+* by github.com/MongooseOrion. 
+*
+* Please make sure using the content of this document in accordance with 
+* the respective OPEN-SOURCE licenses. 
+* 
+* THIS CODE IS PROVIDED BY https://github.com/MongooseOrion. 
+* FILE ENCODER TYPE: GBK
+* ========================================================================
+*/
+// 顶层文件
+//
+`define CMOS_1          // 选择要修改的相机源
 module fpga_top#(
     parameter MEM_ROW_ADDR_WIDTH   = 15         ,
 	parameter MEM_COL_ADDR_WIDTH   = 10         ,
@@ -9,26 +34,26 @@ module fpga_top#(
 	parameter MEM_DQS_WIDTH        =  32/8      
 )
 (
-    input                               sys_clk                ,
-    input                               globalrst              ,
+    input                               sys_clk                 ,
+    input                               sys_rst                 ,
 
     //cmos1	
-    output  [1:0]                       cmos_init_done          ,
-    inout                               cmos1_scl              ,//cmos1 i2c 
-    inout                               cmos1_sda              ,//cmos1 i2c 
-    input                               cmos1_vsync            ,//cmos1 vsync
-    input                               cmos1_href             ,//cmos1 hsync refrence,data valid
-    input                               cmos1_pclk             ,//cmos1 pixel clock
-    input   [7:0]                       cmos1_data             ,//cmos1 data
-    output                              cmos1_reset            ,//cmos1 reset
+    output                              cmos_init_led           ,
+    inout                               cmos1_scl               ,//cmos1 i2c 
+    inout                               cmos1_sda               ,//cmos1 i2c 
+    input                               cmos1_vsync             ,//cmos1 vsync
+    input                               cmos1_href              ,//cmos1 hsync refrence,data valid
+    input                               cmos1_pclk              ,//cmos1 pixel clock
+    input   [7:0]                       cmos1_data              ,//cmos1 data
+    output                              cmos1_reset             ,//cmos1 reset
     //cmos2
-    inout                               cmos2_scl              ,//cmos2 i2c 
-    inout                               cmos2_sda              ,//cmos2 i2c 
-    input                               cmos2_vsync            ,//cmos2 vsync
-    input                               cmos2_href             ,//cmos2 hsync refrence,data valid
-    input                               cmos2_pclk             ,//cmos2 pxiel clock
-    input   [7:0]                       cmos2_data             ,//cmos2 data
-    output                              cmos2_reset            ,//cmos2 reset
+    inout                               cmos2_scl               ,//cmos2 i2c 
+    inout                               cmos2_sda               ,//cmos2 i2c 
+    input                               cmos2_vsync             ,//cmos2 vsync
+    input                               cmos2_href              ,//cmos2 hsync refrence,data valid
+    input                               cmos2_pclk              ,//cmos2 pxiel clock
+    input   [7:0]                       cmos2_data              ,//cmos2 data
+    output                              cmos2_reset             ,//cmos2 reset
     
     // RJ45 网口时序
     output                      e_mdc                               ,//MDIO的时钟信号，用于读写PHY的寄存器
@@ -52,13 +77,16 @@ wire                        cmos_pclk           ;//cmos pxiel clock
 wire   [7:0]                cmos_data           ;//cmos data
 wire                        cmos_reset          ;//cmos reset
 wire                        initial_en          ;
-wire[15:0]                  cmos1_d_16bit       ;
-wire                        cmos1_href_16bit    ;
-wire                        cmos1_pclk_16bit    ;
+wire [1:0]                  cmos_init_done      ;
 
 wire                        clk_50M             ;
 wire                        clk_25M             ;
 wire                        eth_clk             ;
+
+wire                        vin_clk             ;
+wire [7:0]                  vin_data            ;
+wire                        vin_vsync           ;
+wire                        vin_hsync           ;
 
 reg [7:0]                   cmos1_d_d0          ;
 reg                         cmos1_href_d0       ;
@@ -66,21 +94,26 @@ reg                         cmos1_vsync_d0      ;
 reg [7:0]                   cmos2_d_d0          ;
 reg                         cmos2_href_d0       ;
 reg                         cmos2_vsync_d0      ;
+reg                         reg_cmos_init       ;
+
+assign cmos_init_led = reg_cmos_init;
 
 
+//
 // clk
+//
 sys_pll u_sys_pll(
-    .pll_rst    (~globalrst),      // input
-    .clkin1     (sys_clk),        // input
-    .pll_lock   (),    // output
-    .clkout0    (clk_50M),      // output
-    .clkout1    (eth_clk),      // output
-    .clkout2    (clk_25M)       // output
+    .pll_rst    (!sys_rst   ),      // input
+    .clkin1     (sys_clk    ),        // input
+    .pll_lock   (pll_lock   ),    // output
+    .clkout0    (clk_50M    ),      // output
+    .clkout1    (clk_25M    )       // output
 );
 
 
-//配置CMOS///////////////////////////////////////////////////////////////////////////////////
-//OV5640 register configure enable    
+//
+// 配置 CMOS
+// OV5640 register configure enable    
 power_on_delay	power_on_delay_inst(
     .clk_50M                 (clk_50M       ),//input
     .reset_n                 (1'b1           ),//input	
@@ -89,7 +122,8 @@ power_on_delay	power_on_delay_inst(
     .camera_pwnd             (               ),//output
     .initial_en              (initial_en     ) //output		
 );
-//CMOS1 Camera 
+
+// CMOS1 Camera 
 reg_config_1	coms1_reg_config(
     .clk_25M                 (clk_25M            ),//input
     .camera_rstn             (cmos1_reset        ),//input
@@ -100,7 +134,8 @@ reg_config_1	coms1_reg_config(
     .reg_index               (                   ),//output reg [8:0]
     .clock_20k               (                   ) //output reg
 );
-//CMOS2 Camera 
+
+// CMOS2 Camera 
 reg_config_1	coms2_reg_config(
     .clk_25M                 (clk_25M            ),//input
     .camera_rstn             (cmos2_reset        ),//input
@@ -113,56 +148,67 @@ reg_config_1	coms2_reg_config(
 );
 
 
-//CMOS 8bit转16bit///////////////////////////////////////////////////////////////////////////////////
-//CMOS1
+// 
+// 使信号稳定
+// CMOS1
 always@(posedge cmos1_pclk)begin
     cmos1_d_d0        <= cmos1_data    ;
     cmos1_href_d0     <= cmos1_href    ;
     cmos1_vsync_d0    <= cmos1_vsync   ;
 end
 
-cmos_8_16bit cmos1_8_16bit(
-    .pclk           (cmos1_pclk       ),//input
-    .rst_n          (cmos_init_done[0]   ),//input
-    .pdata_i        (cmos1_d_d0       ),//input[7:0]
-    .de_i           (cmos1_href_d0    ),//input
-    .vs_i           (cmos1_vsync_d0    ),//input
-    
-    .pixel_clk      (cmos1_pclk_16bit ),//output
-    .pdata_o        (cmos1_d_16bit    ),//output[15:0]
-    .de_o           (cmos1_href_16bit ) //output
-);
-//CMOS2
+// CMOS2
 always@(posedge cmos2_pclk)begin
     cmos2_d_d0        <= cmos2_data    ;
     cmos2_href_d0     <= cmos2_href    ;
     cmos2_vsync_d0    <= cmos2_vsync   ;
 end
 
-cmos_8_16bit cmos2_8_16bit(
-    .pclk           (cmos2_pclk       ),//input
-    .rst_n          (cmos_init_done[1]),//input
-    .pdata_i        (cmos2_d_d0       ),//input[7:0]
-    .de_i           (cmos2_href_d0    ),//input
-    .vs_i           (cmos2_vsync_d0    ),//input
-    
-    .pixel_clk      (cmos2_pclk_16bit ),//output
-    .pdata_o        (cmos2_d_16bit    ),//output[15:0]
-    .de_o           (cmos2_href_16bit ) //output
-);
+
+//
+// 选择的相机源
+//
+`ifdef CMOS_1
+assign     vin_clk      =    cmos1_pclk         ;
+assign     vin_vsync    =    cmos1_vsync_d0     ;
+assign     vin_hsync    =    cmos1_href_d0      ;
+assign     vin_data     =    cmos1_d_d0         ;
+`elsif CMOS_2
+assign     vin_clk      =    cmos2_pclk         ;
+assign     vin_vsync    =    cmos2_vsync_d0     ;
+assign     vin_hsync    =    cmos2_href_d0      ;
+assign     vin_data     =    cmos2_d_d0         ;
+`endif
 
 
-///////////////////////////////////////////////////////////////
+//
+// cmos 初始化信号
+//
+always @(posedge clk_50M or negedge sys_rst) begin
+    if(!sys_rst) begin
+        reg_cmos_init <= 'b0;
+    end
+    else if(cmos_init_done == 2'b11) begin
+        reg_cmos_init <= 1'b1;
+    end
+    else begin
+        reg_cmos_init <= reg_cmos_init;
+    end
+end
+
+
+//
 // 以太网传输模块
+//
 eth_trans  trans_sys  (
-    .sys_clk        (eth_clk),
-    .rst_n          (globalrst),
-    .led            (eth_init),
+    .sys_clk        (clk_50M    ),
+    .rst_n          (sys_rst    ),
+    .led            (eth_init   ),
 
-    .vin_clk        (cmos1_pclk),
-    .vin_data       (cmos1_d_d0),// 8bit, not 16bit
-    .vin_vsync      (cmos1_vsync_d0),
-    .vin_hsync      (cmos1_href_d0),
+    .vin_clk        (vin_clk    ),
+    .vin_data       (vin_data   ),
+    .vin_vsync      (vin_vsync  ),
+    .vin_hsync      (vin_hsync  ),
 
     .e_mdc          (e_mdc),
     .e_mdio         (e_mdio),

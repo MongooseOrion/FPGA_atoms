@@ -106,8 +106,8 @@ wire rx_clki_shft_bufg;
 
 wire clk;
 pll_sft pll_phase_shift(   
-    .clkout0   (rx_clki_shft       ),    //125MHz
-     .clkout1   (clk       ),    //200MHz
+    .clkout0   (rx_clki_shft       ),    //125MHz, shift:180
+     .clkout1   (clk       ),           //200MHz
     .clkin1    (rgmii_rxc          ),
      .clkfb    (gmii_rx_clk        ),
     .pll_rst   (1'b0               ),

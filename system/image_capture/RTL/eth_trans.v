@@ -107,14 +107,14 @@ camera_fifo camera_fifo_inst(
     .wr_data            (cmos_data_delay),
     .wr_full            (),
     .wr_water_level     (),
-    .almost_full        (),
+    .almost_full        (),                 // 1020
     .rd_clk             (gmii_rx_clk),
     .rd_rst             (cmos_vsync),
     .rd_en              (fifo_rd_en),
     .rd_data            (fifo_data),
     .rd_empty           (),
     .rd_water_level     (fifo_data_count),
-    .almost_empty       ()
+    .almost_empty       ()                  // 4
 );
 
 mac_test mac_top (
