@@ -13,8 +13,8 @@
 
 ```
   |-- base_model                    // Verilog 最基础的模块，对于已经具备 FPGA 经验的人没有必要点开
-  |-- pango                         // 紫光同创 FPGA 移植项目
-  |-- system                        // 用于各种用途的 FPGA 小项目
+  |-- pango_transplant              // 紫光同创 FPGA 移植项目
+  |-- system_project                // 用于各种用途的 FPGA 项目
 ```
 
 ## 重要项目简要
@@ -22,4 +22,5 @@
 ```
   ../pango/hbird_e203               // 移植蜂鸟 E203 RISC-V 到紫光同创平台
   ../system/image_capture           // OV5640 采集图像 UDP 传输
+  ../system/audio_ethernet_trans    // 音频输入，以太网音频数据传输
 ```
