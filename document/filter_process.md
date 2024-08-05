@@ -1,4 +1,4 @@
-/* =======================================================================
+<!-- =====================================================================
 * Copyright (c) 2023, MongooseOrion.
 * All rights reserved.
 *
@@ -22,15 +22,5 @@
 * THIS CODE IS PROVIDED BY https://github.com/MongooseOrion. 
 * FILE ENCODER TYPE: GBK
 * ========================================================================
-*/
-// AHB Lite 转 AXI 桥，manager 端，适用于 1 主 1 从的情况
-// 
-module ahb_lite_to_axi_bridge#(
-    parameter ADDR_WIDTH = 32,
-    parameter DATA_WIDTH = 32,
-    parameter BURST_LEN = 16
-)(
-    
-);
-
-endmodule
+-->
+# 

@@ -1,4 +1,4 @@
-/* =======================================================================
+<!-- =====================================================================
 * Copyright (c) 2023, MongooseOrion.
 * All rights reserved.
 *
@@ -22,15 +22,6 @@
 * THIS CODE IS PROVIDED BY https://github.com/MongooseOrion. 
 * FILE ENCODER TYPE: GBK
 * ========================================================================
-*/
-// AHB Lite ×ª AXI ÇÅ£¬manager ¶Ë£¬ÊÊÓÃÓÚ 1 Ö÷ 1 ´ÓµÄÇé¿ö
-// 
-module ahb_lite_to_axi_bridge#(
-    parameter ADDR_WIDTH = 32,
-    parameter DATA_WIDTH = 32,
-    parameter BURST_LEN = 16
-)(
-    
-);
+-->
+# ä»¥å¤ªç½‘ UDP ä¼ è¾“åè®®
 
-endmodule
