@@ -12,8 +12,10 @@
 ## 仓库目录
 
 ```
-  |-- base_model                    // Verilog 最基础的模块，对于已经具备 FPGA 经验的人没有必要点开
-  |-- pango_transplant              // 紫光同创 FPGA 移植项目
+  |-- base_model                    // Verilog 最基础的模块，对于已经具备 FPGA 经验的人没有必要查看
+  |-- document                      // 一些技术文档
+  |-- pango_transplant              // 紫光同创 FPGA 移植项目和 IP 核时序测试例程
+  |-- xilinx_transplant             // 赛灵思 FPGA 移植项目和 IP 核时序测试例程
   |-- system_project                // 用于各种用途的 FPGA 项目
 ```
 
@@ -21,6 +23,14 @@
 
 ```
   ../pango/hbird_e203               // 移植蜂鸟 E203 RISC-V 到紫光同创平台
-  ../system/image_capture           // OV5640 采集图像 UDP 传输
+  ../system/cam_ethernet_trans      // OV5640（单目）采集图像 UDP 传输
   ../system/audio_ethernet_trans    // 音频输入，以太网音频数据传输
 ```
+
+## 技术文档目录
+
+  * [AMBA-AHB 总线介绍](./document/ahb_interface.md)
+  * [AMBA-AXI4 总线介绍](./document/axi_interface.md)
+  * [TCP/IP 以太网传输模型介绍](./document/ethernet_udp_trans.md)
+  * [I2C 两线通信总线介绍](./document/i2c.md)
+  * [SPI 四线通信总线介绍](./document/spi.md)
