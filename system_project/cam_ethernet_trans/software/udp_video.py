@@ -115,8 +115,6 @@ thread2 = threading.Thread(target=cv_imshow)
 thread1.start()
 thread2.start()
 
-
-
 # 等待两个线程执行完毕
 thread1.join()
 thread2.join()

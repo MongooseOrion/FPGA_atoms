@@ -22,9 +22,10 @@
 ## 重要项目简要
 
 ```
-  ../pango/hbird_e203               // 移植蜂鸟 E203 RISC-V 到紫光同创平台
-  ../system/cam_ethernet_trans      // OV5640（单目）采集图像 UDP 传输
-  ../system/audio_ethernet_trans    // 音频输入，以太网音频数据传输
+  ./pango_transplant/hbird_e203           // 移植蜂鸟 E203 RISC-V 到紫光同创平台
+  ./system_project/cam_ethernet_trans     // OV5640（单目）采集图像 UDP 传输
+  ./system_project/dual_image_capture     // OV5640（双目）采集图像 UDP 传输
+  ./system_project/audio_ethernet_trans   // 音频输入，以太网音频数据传输
 ```
 
 ## 技术文档目录
