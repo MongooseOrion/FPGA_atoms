@@ -20,7 +20,7 @@
 * the respective OPEN-SOURCE licenses. 
 * 
 * THIS CODE IS PROVIDED BY https://github.com/MongooseOrion. 
-* FILE ENCODER TYPE: GBK
+* FILE ENCODER TYPE: UTF-8
 * ========================================================================
 -->
 # 以太网 UDP 传输协议

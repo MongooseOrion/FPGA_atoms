@@ -29,15 +29,15 @@
 
 AXI FULL 表示具备完整 AXI 接口的总线，下述按照传输事务来描述接口。
 
-### AXI 写控制信号
+### AXI 读写控制信号
 
 | 信号名称 | 位宽 | 描述 |
 | :---: | :---: | :--- |
-| awlen | [7:0] | 突发长度，指定突发传输中的数据单元数。<br>Length = AWLEN + 1。<br>例如：若要一次突发传输 16 个数据单元，`awlen=8'd15`。 |
-| awsize | [2:0] | 突发大小，指定每个数据单元的大小。计算方法为 DATA_WIDTH/8。<br>3'b000: 1byte<br>3'b001: 2bytes<br>3'b010: 4bytes<br>3'b011: 8bytes<br>...<br>3'b111: 128bytes<br>例如，若写数据位宽为 32bit，则 `awsize=3'b010`。 |
-| awburst | [1:0] | 设置突发类型，参见下述介绍。 |
-| AWID/WID | ID_W_WIDTH | 在多主多从的场景标识事务，参见下述介绍。 |
-| wstrb | DATA_WIDTH/8 | 掩码要传输的数据，按字节指示传输的数据中某些字节为 0，如果全有效，请设置 {(DATA_WIDTH/8){1'b1}} |
+| AxLEN | [7:0] | 突发长度，指定突发传输中的数据单元数。<br>Length = AWLEN + 1。<br>例如：若要一次突发传输 16 个数据单元，`awlen=8'd15`。 |
+| AxSIZE | [2:0] | 突发大小，指定每个数据单元的大小。计算方法为 DATA_WIDTH/8。<br>3'b000: 1byte<br>3'b001: 2bytes<br>3'b010: 4bytes<br>3'b011: 8bytes<br>...<br>3'b111: 128bytes<br>例如，若写数据位宽为 32bit，则 `awsize=3'b010`。 |
+| AxBURST | [1:0] | 设置突发类型，参见下述介绍。 |
+| AxID/xID | ID_W_WIDTH | 在多主多从的场景标识事务，参见下述介绍。 |
+| WSTRB | DATA_WIDTH/8 | 掩码要传输的数据，按字节指示传输的数据中某些字节为 0，如果全有效，请设置 {(DATA_WIDTH/8){1'b1}} |
 
 #### 突发传输类型
 
@@ -47,13 +47,24 @@ AXI FULL 表示具备完整 AXI 接口的总线，下述按照传输事务来描
   * **INCR**：每次数据传输操作的地址 `awaddr` 都会递增，递增的步幅为数据单位的大小（字节）。例如起始地址为 0x1000，则地址序列：0x1000（第 1 个传输）, 0x1004（第 2 个传输）, 0x1008（第 3 个传输）, ..., 0x103C（第 16 个传输）；
   * **WRAP**：在握手时给出首地址，当自增地址达到地址上界时环回到地址下界，并重新开始自增。
 
-    * 地址下界 = (int(start_address / (number_bytes * burst_length))) * (number_bytes * burst_length) （起始地址需要对齐）
-    * 地址上界 = 地址下界 + (number_bytes * burst_length)
-    * 例如起始地址为 0x30，地址下界为 (int(0x30 / (16 * 4))) * (16 * 4) = int(0x30 / 0x40) * 0x40 = 0x00，地址上界为 0x00 + (16 * 4) = 0x40，地址序列应该是：0x30, 0x34, 0x38, 0x3C, 0x00, ..., 0x2C（第 16 个传输）
+      ```python
+      地址下界 = (int(start_address / (number_bytes * burst_length))) * (number_bytes * burst_length)   # 起始地址需要对齐
+      ```
+      ```python
+      地址上界 = 地址下界 + (number_bytes * burst_length)
+      ```
+      例如，起始地址为 0x30，地址下界为 `(int(0x30 / (16 * 4))) * (16 * 4) = int(0x30 / 0x40) * 0x40 = 0x00`，地址上界为 `0x00 + (16 * 4) = 0x40`，地址序列应该是：0x30, 0x34, 0x38, 0x3C, 0x00, ..., 0x2C（第 16 个传输）
   
-  * 起始地址非对齐的情况：例如起始地址为 0x32，则有 align_addr = (int(start_addr / number_bytes)) * number_bytes = (int(0x32 / 4)) * 4 = 0x30，地址序列为：0x32, align_addr+4=0x34, 0x38, ..., 0x2C（WRAP）或0x6C（INCR）
+当突发传输时，起始地址非对齐，此时的处理方法：
 
-#### 写事务 ID 信号 
+例如起始地址为 `0x32`，则有：
+
+```python
+align_addr = (int(start_addr / number_bytes)) * number_bytes = (int(0x32 / 4)) * 4 = 0x30
+```
+地址序列为：0x32, align_addr+4=0x34, 0x38, ..., 0x2C（WRAP）或 0x6C（INCR）
+
+#### 读写事务 ID 信号 
 
   1. 写地址通道 `AWID`：写地址 ID，标识写事务。写地址通道上的每个地址请求都带有一个 `AWID`，从设备使用这个 ID 来匹配后续的写数据和响应。
   2. 写数据通道 `WID`：写数据 ID，与 `AWID` 对应。写数据通道上的每个数据传输都带有一个 `WID`，从设备使用这个 ID 来确保数据与正确的写事务匹配。
@@ -84,7 +95,7 @@ AXI FULL 表示具备完整 AXI 接口的总线，下述按照传输事务来描
 
       Master 1 使用 BID = 0x02 来识别响应是对其请求的回应。
 
-### AXI 写流程
+### 典型的写事务流程
 
 
 

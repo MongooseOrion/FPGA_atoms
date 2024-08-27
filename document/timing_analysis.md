@@ -20,7 +20,7 @@
 * the respective OPEN-SOURCE licenses. 
 * 
 * THIS CODE IS PROVIDED BY https://github.com/MongooseOrion. 
-* FILE ENCODER TYPE: GBK
+* FILE ENCODER TYPE: UTF-8
 * ========================================================================
 -->
 # 时序分析和时钟约束
@@ -156,7 +156,10 @@ set_output_delay -clock [get_clocks sys_clk] -min 0.5 [get_ports data_out]
 
 此命令标记某些路径为“假路径”，告诉 STA 工具这些路径不参与时序分析。
 
-当你确定某些逻辑路径不需要满足时序要求时，可以将这些路径标记为假路径。例如，跨时钟域的异步信号通常会被标记为假路径，以避免工具误报时序违例。
+当你确定某些逻辑路径不需要满足时序要求时，可以将这些路径标记为假路径。例如，跨时钟域的**异步**信号通常会被标记为假路径，以避免工具误报时序违例。通常有以下路径被设置为 false_path：
+
+  1. 从逻辑上考虑，与电路正常工作不相关的那些路径，比如测试逻辑，静态或准静态逻辑。
+  2. 从时序上考虑，我们在综合时不需要分析的那些路径，比如跨越异步时钟域的路径。 
 
 ```tcl
 set_false_path -from [get_ports async_input] -to [get_ports data_out]
@@ -205,7 +208,7 @@ set_multicycle_path 2 -from [get_ports data_in] -to [get_ports data_out]
 set_clock_uncertainty {0.200} [get_clocks {cmos1_pclk}]  -setup -hold
 ```
 
-这个命令
+这个命令告诉 FPGA 时序分析工具，针对 `cmos1_pclk` 时钟信号，在进行**建立时间**和**保持时间**分析时，都要考虑 0.200ns 的时钟不确定性。这意味着工具在时序分析时，会假设时钟可能有 0.200ns 的时间误差，从而在时序计算中引入额外的裕量。
 
 ### `set_generated_clock`
 
@@ -219,7 +222,36 @@ set_clock_uncertainty {0.200} [get_clocks {cmos1_pclk}]  -setup -hold
 create_generated_clock -name {cmos2_pclk_16bit} -source [get_ports {cmos2_pclk}] [get_pins {cmos2_8_16bit/pixel_clk}] -master_clock [get_clocks {cmos2_pclk}] -multiply_by {1} -divide_by {2}
 ```
 
-这个命令
+  1. `-name {cmos2_pclk_16bit}`
+
+      这个选项定义了生成时钟的名称。在这个例子中，生成的时钟被命名为 `cmos2_pclk_16bit`。这个名称是用于标识这个派生时钟的逻辑标签，便于在设计的其他部分引用。
+
+  2. `-source [get_ports {cmos2_pclk}]`
+
+      这个选项指定了生成时钟的来源时钟信号。在这里，`get_ports {cmos2_pclk}` 表示源时钟 `cmos2_pclk` 是来自 FPGA 顶层模块的一个输入端口。`cmos2_pclk` 是主时钟的名称，是从顶层模块的端口 `cmos2_pclk` 获得的。
+
+  3. `[get_pins {cmos2_8_16bit/pixel_clk}]`
+
+      这个部分指定生成时钟信号的目的地（即生成时钟所连接的引脚）。在这个例子中，生成的时钟信号被分配到模块 `cmos2_8_16bit` 中的 `pixel_clk` 引脚。
+
+      `cmos2_8_16bit/pixel_clk` 表示模块 `cmos2_8_16bit` 内的 `pixel_clk` 引脚，这个引脚使用了生成时钟 `cmos2_pclk_16bit`。
+
+  4. `-master_clock [get_clocks {cmos2_pclk}]`
+
+      这个选项指定了生成时钟的主时钟（master clock），即生成时钟是从哪个时钟衍生出来的。在这里，`get_clocks {cmos2_pclk}` 表示 `cmos2_pclk` 是主时钟。
+
+      `cmos2_pclk` 是作为 `cmos2_pclk_16bit` 派生时钟的主时钟。工具会基于这个主时钟来计算派生时钟的属性。
+
+  5. `-multiply_by {1} -divide_by {2}`
+
+      这两个选项指定了生成时钟的频率是如何从主时钟的频率派生出来的。
+
+      *  `-multiply_by {1}`：表示生成时钟的频率是主时钟频率的 1 倍（即没有倍频）。
+      *  `-divide_by {2}`：表示生成时钟的频率是主时钟频率的 1/2（即频率被减半）。
+
+      如果主时钟 `cmos2_pclk` 的频率是 $f$ ，那么生成时钟 `cmos2_pclk_16bit` 的频率就是：
+
+      $$f_{\text{generated}} = \frac{f_{\text{master}} \times \text{multiply\_by}}{\text{divide\_by}}$$
 
 ### `set_propagated_clock`
 
@@ -227,8 +259,47 @@ create_generated_clock -name {cmos2_pclk_16bit} -source [get_ports {cmos2_pclk}]
 
 当时钟信号经过了复杂的逻辑或布线时（例如缓冲器或组合逻辑），你需要告诉 STA 工具自动计算时钟传播的延迟，而不是使用简单的预设值。
 
+例如：
+
+```tcl
+set_propagated_clock [get_clocks sys_clk]
+```
+
+这个命令告诉 STA 工具对 `sys_clk` 进行传播时钟分析，自动计算和考虑时钟在实际电路中的传播延迟。
+
 ### `define_attribute`
 
 #### `PAP_LOC`
 
+例如：
+
+```tcl
+define_attribute {i:u_ddr.u_ipsxb_ddrphy_pll_1.u_pll_e3} {PAP_LOC} {PLL_158_179}
+```
+
+  1. `{i:u_ddr.u_ipsxb_ddrphy_pll_1.u_pll_e3}`
+
+      * 前缀 `i:` 表示这是一个实例（instance）。在 FPGA 设计中，实例通常是指模块或单元在更大设计中的具体实现。这可能是一个逻辑模块的实例化，或者是 FPGA 的一个硬核（如 PLL、BRAM 等）实例。
+      * `u_ddr.u_ipsxb_ddrphy_pll_1.u_pll_e3`：这是实例的完整路径名。它表示在设计层次结构中，`u_pll_e3` 是 `u_ipsxb_ddrphy_pll_1` 单元中的一个实例，而 `u_ipsxb_ddrphy_pll_1` 又是在 `u_ddr` 模块中实例化的。也就是说，这是一个嵌套的模块路径，`u_pll_e3` 是在最底层的模块（`u_ipsxb_ddrphy_pll_1`）中实例化的。
+
+  2. `{PAP_LOC}`
+
+      * 这个属性用于指定实例在 FPGA 上的具体物理位置。PAP_LOC 代表的是 "Placement Attribute for Location"，它通常用于锁定 FPGA 布局布线中的特定模块位置，确保工具将该模块放置在指定的位置上。
+
+  3. `{PLL_158_179}`
+
+      * 这是一个特定的位置标识符，表示 FPGA 内部的一个具体物理位置。对于一个 PLL 实例，这通常意味着它会被放置在 FPGA 布局中的编号为 158_179 的 PLL 位置上。
+
+这意味着，在 FPGA 布局布线过程中，工具会尝试将 `u_pll_e3` 实例放置在 FPGA 内部标识为 `PLL_158_179` 的物理位置。
+
 #### `PAP_CLOCK_DEDICATED_ROUTE`
+
+通常，时钟信号使用专用布线资源以确保信号的低延迟和高稳定性，但在某些特殊情况下，设计者可能希望时钟信号使用普通的布线资源（例如，当信号不是主要的时钟信号，或当设计中资源紧张时），这时就需要显式地将 `PAP_CLOCK_DEDICATED_ROUTE` 设置为 `FALSE`。
+
+例如：
+
+```tcl
+define_attribute {n:cmos2_pclk} {PAP_CLOCK_DEDICATED_ROUTE} {FALSE}
+```
+
+这意味着，`cmos2_pclk` 信号将不会使用 FPGA 内部为时钟信号专门提供的专用布线资源。

@@ -20,7 +20,7 @@
 * the respective OPEN-SOURCE licenses. 
 * 
 * THIS CODE IS PROVIDED BY https://github.com/MongooseOrion. 
-* FILE ENCODER TYPE: GBK
+* FILE ENCODER TYPE: UTF-8
 * ========================================================================
 -->
 # FIR 滤波器和 IIR 滤波器设计
