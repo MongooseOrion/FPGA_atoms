@@ -98,6 +98,9 @@ align_addr = (int(start_addr / number_bytes)) * number_bytes = (int(0x32 / 4)) *
 ### 典型的写事务流程
 
 
+## AXI-stream
+
+
 
 ## 补充说明
 

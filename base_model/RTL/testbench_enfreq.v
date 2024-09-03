@@ -7,7 +7,7 @@ module testbench_enfreq(
 
 );
 
-parameter   CLK_PERIOD = 10;
+parameter  CLK_PERIOD = 10;
 
 reg     clk;
 reg     rst;
@@ -28,7 +28,7 @@ initial begin
     rst <= 1;
 end
 
-always #(CLK_PERIORD / 2) clk = ~clk;
+always #(CLK_PERIOD / 2) clk = ~clk;
 
 
 // ²úÉú²âÊÔ¼¤Àø

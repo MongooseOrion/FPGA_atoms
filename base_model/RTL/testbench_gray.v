@@ -30,6 +30,11 @@ gray_test(
     .o_data     (o_data)
 );
 
+integer wfile;
+initial begin
+    wfile = $fopen("C:/Users/YiMon/source/repos/MyVerilogLearning/solution_1/RTL/output_file/testbench_gray_data.txt","w");
+end
+
 // 初始化信号和时钟
 initial begin
     rst <= 0;
@@ -93,11 +98,6 @@ always @(posedge clk) begin
 	else ;
 end
 */
-
-integer wfile;
-initial begin
-    wfile = $fopen("C:/Users/YiMon/source/repos/MyVerilogLearning/solution_1/RTL/output_file/testbench_gray_data.txt","w");
-end
 
 always@(posedge clk) begin
     if(o_valid) $fwrite(wfile,"%b\n",o_data);

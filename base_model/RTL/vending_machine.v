@@ -15,14 +15,14 @@ module vending_machine(
 // 
 
 // 参数化，以便 case 语句的操作
-parameter IDLE = 4'b0;
-parameter IN_1 = 4'b1;
-parameter IN_2 = 4'b2;
-parameter IN_3 = 4'b3;
-parameter IN_4 = 4'b4;
-parameter IN_5 = 4'b5;
-parameter IN_6 = 4'b6;
-parameter DONE = 4'b7;
+parameter IDLE = 4'd0;
+parameter IN_1 = 4'd1;
+parameter IN_2 = 4'd2;
+parameter IN_3 = 4'd3;
+parameter IN_4 = 4'd4;
+parameter IN_5 = 4'd5;
+parameter IN_6 = 4'd6;
+parameter DONE = 4'd7;
 parameter MONEY_PAY = 4'd6;
 
 reg  [3:0]  current_state;
@@ -43,7 +43,7 @@ end
 
 // 组合逻辑，实现状态转移
 always@(*) begin
-    case(current_state) begin
+    case(current_state)
         IDLE: begin
             if(i_one_cny || i_two_cny || i_five_cny) begin
                 next_state = IN_1;
@@ -129,7 +129,7 @@ always@(posedge clk) begin
         money_sum <= 'b0;
     end
     else begin
-        case()
+        case(current_state)
             DONE: money_sum <= 'b0;             // 当 case 语句执行情况 DONE 时，变量赋值为 0
             default: begin
                 if(i_one_cny) begin
@@ -151,7 +151,7 @@ end
 
 
 // 状态机输出赋值
-always@(posedge) begin
+always@(posedge clk or negedge rst) begin
     if(!rst) begin
         o_done <= 'b0;
     end

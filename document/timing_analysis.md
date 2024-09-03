@@ -108,6 +108,17 @@ create_clock -name {sys_clk} [get_ports {sys_clk}] -period {20.000} -waveform {0
 
 这个命令定义了一个周期为 20ns 的主时钟 `sys_clk`，这个名称是一个逻辑上的标签，便于在设计的其他部分引用这个时钟信号，并将它与顶层模块的端口 `sys_clk` 关联，这个名称是模块设计的端口名称。最后，通过 `waveform` 选项定义了时钟信号的波形，即上升沿和下降沿的时间点，它指定了时钟信号的占空比，此处表示在 0.000 ns 时钟信号从低到高（上升沿），在 10.000 ns 时钟信号从高到低（下降沿）。
 
+请注意，如果使用的是差分时钟对，那么管脚约束应该全部约束，但是创建时钟只需要 `get_ports {正相时钟}` 即可。例如：在 FPGA 中实现一个 DDR 接口，时钟信号 `ddr_clk` 运行在 200MHz，使用 `DIFF_SSTL15` 电平标准。这个差分时钟信号通过 FPGA 的 `clk_p` 和 `clk_n` 输入端口传入，分别连接到 `E15` 和 `F15` 管脚，相关的 XDC 命令为：
+
+```tcl
+set_property PACKAGE_PIN E15 [get_ports clk_p]
+set_property IOSTANDARD DIFF_SSTL15 [get_ports clk_p]
+set_property PACKAGE_PIN F15 [get_ports clk_n]
+set_property IOSTANDARD DIFF_SSTL15 [get_ports clk_n]
+
+create_clock -name ddr_clk -period 5.000 [get_ports clk_p]
+```
+
 ### `set_clock_groups`
 
 此命令用于将时钟分成不同的组，并定义这些时钟组之间是否有时序关系。你可以指定时钟之间是同步的还是异步的，或直接忽略它们之间的时序路径。
@@ -117,7 +128,7 @@ create_clock -name {sys_clk} [get_ports {sys_clk}] -period {20.000} -waveform {0
 例如：
 
 ```tcl
-set_clock_groups -name ddr_ref_clk -asynchronous -group [get_clocks {sys_clk}]
+set_clock_groups -asynchronous -group [get_clocks {ddr_ref_clk}] -group [get_clocks {sys_clk}]
 ```
 
 这个命令将 `ddr_ref_clk` 和 `sys_clk` 分为两个独立的时钟组，并告诉工具它们是异步的，工具将不会对这两个时钟组之间的路径进行时序分析。
@@ -131,8 +142,7 @@ set_clock_groups -name ddr_ref_clk -asynchronous -group [get_clocks {sys_clk}]
 例如：
 
 ```tcl
-set_input_delay -clock [get_clocks sys_clk] -max 3 [get_ports data_in]
-set_input_delay -clock [get_clocks sys_clk] -min 1 [get_ports data_in]
+set_input_delay -clock [get_clocks sys_clk] -max {3.0} -min {1.0} [get_ports data_in]
 ```
 
 这些命令定义了 `data_in` 端口的输入延迟。`data_in` 信号的到达时间在 `sys_clk` 时钟的 1ns 到 3ns 之间。
@@ -146,8 +156,7 @@ set_input_delay -clock [get_clocks sys_clk] -min 1 [get_ports data_in]
 例如：
 
 ```tcl
-set_output_delay -clock [get_clocks sys_clk] -max 2 [get_ports data_out]
-set_output_delay -clock [get_clocks sys_clk] -min 0.5 [get_ports data_out]
+set_output_delay -clock [get_clocks sys_clk] -max {2.0} -min{0.5} [get_ports data_out]
 ```
 
 这些命令定义了 `data_out` 端口的输出延迟。`data_out` 信号的有效时间在 `sys_clk` 时钟的 0.5ns 到 2ns 之间。
@@ -303,3 +312,42 @@ define_attribute {n:cmos2_pclk} {PAP_CLOCK_DEDICATED_ROUTE} {FALSE}
 ```
 
 这意味着，`cmos2_pclk` 信号将不会使用 FPGA 内部为时钟信号专门提供的专用布线资源。
+
+---
+
+## 一些例子
+
+  1. 你的设计中包含一个 SPI 通信模块，其中主时钟 `spi_clk` 运行在 20MHz，时钟信号通过 FPGA 的 `clk_in` 输入端口传入，连接到 `B12` 管脚，使用 `LVCMOS33` 逻辑电平。你还知道 SPI 通信中的 `mosi` 和 `miso` 信号分别连接到 `C13` 和 `D14` 管脚，也使用 `LVCMOS33` 电平标准。为这三个信号编写 XDC 约束命令。
+
+      ```tcl
+      set_property PACKAGE_PIN B12 [get_ports clk_in]
+      set_property IOSTANDARD LVCMOS33 [get_ports clk_in]
+      set_property PACKAGE_PIN C13 [get_ports MOSI]
+      set_property IOSTANDARD LVCMOS33 [get_ports MOSI]
+      set_property PACKAGE_PIN D14 [get_ports MISO]
+      set_property IOSTANDARD LVCMOS33 [get_ports MISO]
+
+      create_clock -name spi_clk -period 50.000 [get_ports clk_in]
+      ```
+
+  2. 在你的 FPGA 设计中，有一个信号 `data_valid`，该信号从一个高速 ADC 传入 FPGA，频率为 100MHz。由于 `data_valid` 触发的逻辑链路较长，你想指定该信号的多周期路径，以便工具在两个时钟周期内完成数据采样。请编写 XDC 约束命令。
+
+      ```tcl
+      set_multicycle_path 2 -from [get_ports data_valid] -to [get_nets DATA_VALID]
+      ```
+
+  3. 你的设计中有一个跨时钟域的路径，源时钟为 50MHz（`clk_50`），目标时钟为 100MHz（`clk_100`）。这两个时钟都是独立的，不存在时序关系。你希望工具忽略这个跨时钟域路径的时序分析，以避免误报时序违例。请编写 XDC 约束命令。
+
+      ```tcl
+      set_clock_groups -asynchronous -group [get_clocks clk_100] -group [get_clocks clk_50]
+      ```
+
+  4. 在你的设计中，有一个信号 `ready` 从低频时钟域（20MHz）跨入高频时钟域（100MHz），信号需要在 100MHz 时钟域中被正确采样。为了保证数据的可靠性，你决定将这个路径标记为假路径，并且设置一个输入延迟，假设延迟时间是 5ns。请编写 XDC 约束命令。
+
+      ```tcl
+      create_clock -name clk_1 -period 50.000 [get_ports clk_1]
+      create_clock -name clk_2 -period 10.000 [get_ports clk_2]
+      
+      set_false_path -from [get_ports ready] -to [get_ports ready_high]
+      set_input_delay -clock [get_clocks clk_1] -min 0.0 -max 5.0 [get_ports ready]
+      ```
