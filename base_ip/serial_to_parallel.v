@@ -38,13 +38,13 @@ module serial_to_parallel#(
     output  [DATA_WIDTH-1'b1:0]     parallel_data
 );
 
-localparam DATA_NUM = {DATA_WIDTH{1'b1}};
+localparam DATA_NUM = DATA_WIDTH - 1'b1;
 
-reg                         data_valid_1;
-reg                         serial_data_1;
-reg [DATA_WIDTH:0]          cnt_bit;
-reg                         data_ready_out_reg;
-reg [DATA_WIDTH-1'b1:0]     parallel_data_reg;
+reg                                 data_valid_1;
+reg                                 serial_data_1;
+reg [$clog2(DATA_WIDTH)-1'b1:0]     cnt_bit;
+reg                                 data_ready_out_reg;
+reg [DATA_WIDTH-1'b1:0]             parallel_data_reg;
 
 assign data_ready_out = data_ready_out_reg;
 assign parallel_data = parallel_data_reg;
@@ -69,11 +69,16 @@ always @(posedge clk or negedge rstn) begin
         cnt_bit <= 'b0;
     end
     else begin
-        if((data_valid_1 == 1'b1) && (cnt_bit < DATA_NUM)) begin
-            cnt_bit <= cnt_bit + 1'b1;
+        if(data_valid_1 == 1'b1) begin
+            if(cnt_bit < DATA_NUM) begin
+                cnt_bit <= cnt_bit + 1'b1;
+            end
+            else begin
+                cnt_bit <= 'd0;
+            end
         end
         else begin
-            cnt_bit <= 0;
+            cnt_bit <= cnt_bit;
         end
     end
 end
