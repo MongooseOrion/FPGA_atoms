@@ -12,7 +12,7 @@
 ## 仓库目录
 
 ```
-  |-- base_model                    // Verilog 最基础的模块，对于已经具备 FPGA 经验的人没有必要查看
+  |-- base_ip                       // 包含一些基础 IP
   |-- document                      // 一些技术文档
   |-- pango_transplant              // 紫光同创 FPGA 移植项目和 IP 核时序测试例程
   |-- xilinx_transplant             // 赛灵思 FPGA 移植项目和 IP 核时序测试例程

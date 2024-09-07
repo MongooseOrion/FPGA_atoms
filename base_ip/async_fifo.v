@@ -221,7 +221,7 @@ end
 dual_port_RAM #(
     .ADDR_WIDTH     (ADDR_WIDTH),
     .DATA_WIDTH     (DATA_WIDTH)
-) dual_port_RAM_U0 (
+) dual_port_RAM_inst (
     .wr_clk         (wr_clk),
     .wr_en          ((wr_en) && (!wr_full)),
     .wr_addr        (wr_addr[ADDR_WIDTH-1:0]),  
