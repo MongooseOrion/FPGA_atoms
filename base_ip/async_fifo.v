@@ -23,54 +23,11 @@
 * FILE ENCODER TYPE: GBK
 * ========================================================================
 */
+//
 // Òì²½ FIFO
 `timescale 1ns/1ps
 
-//
-// Ë«¶Ë¿Ú RAM
-module dual_port_RAM #(
-    parameter ADDR_WIDTH = 16,
-    parameter DATA_WIDTH = 8
-)(
-    input                               wr_clk  ,
-    input                               wr_en   ,
-    input       [ADDR_WIDTH-1'b1:0]     wr_addr ,
-    input       [DATA_WIDTH-1'b1:0]     wr_data ,
-    input                               rd_clk  ,
-    input                               rd_en   ,
-    input       [ADDR_WIDTH-1'b1:0]     rd_addr ,
-    output      [DATA_WIDTH-1'b1:0]     rd_data
-);
-
-reg [DATA_WIDTH-1'b1:0] RAM_MEM [0:ADDR_WIDTH-1'b1];
-reg [DATA_WIDTH-1'b1:0] rd_data_reg;
-
-assign rd_data = rd_data_reg;
-
-always @(posedge wr_clk ) begin
-    if(wr_en) begin
-        RAM_MEM[wr_addr] <= wr_data;
-    end
-    else begin
-        RAM_MEM[wr_addr] <= RAM_MEM[wr_addr];
-    end
-end 
-
-always @(posedge rd_clk) begin
-    if(rd_en) begin
-        rd_data_reg <= RAM_MEM[rd_addr];
-    end
-    else begin
-        rd_data_reg <= rd_data_reg;
-    end
-end 
-
-endmodule  
-
-
-//
-// Òì²½ FIFO
-module asyn_fifo#(
+module async_fifo#(
     parameter ADDR_WIDTH = 'd16,
     parameter DATA_WIDTH = 'd8,
     parameter ALMOST_FULL_NUM = 'd1024,
@@ -207,7 +164,7 @@ always @(posedge wr_clk or negedge wr_rstn) begin
 end 
 
 always @ (posedge rd_clk or negedge rd_rstn) begin
-    if(~rd_rstn) begin
+    if(!rd_rstn) begin
         addr_w2r_1 <= 'd0;
         addr_w2r_2 <= 'd0;
     end
