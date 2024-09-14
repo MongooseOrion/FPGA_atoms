@@ -24,42 +24,35 @@
 * ========================================================================
 */
 //
-// 双端口 RAM
-module dual_port_RAM #(
-    parameter ADDR_WIDTH = 16,
-    parameter DATA_WIDTH = 8
-)(
-    input                               wr_clk  ,
-    input                               wr_en   ,
-    input       [ADDR_WIDTH-1'b1:0]     wr_addr ,
-    input       [DATA_WIDTH-1'b1:0]     wr_data ,
-    input                               rd_clk  ,
-    input                               rd_en   ,
-    input       [ADDR_WIDTH-1'b1:0]     rd_addr ,
-    output      [DATA_WIDTH-1'b1:0]     rd_data
+// 加法器
+`timescale 1ns/1ps
+
+//
+// 半加器，不考虑输入进位
+module half_adder(
+    input       a,
+    input       b,
+    output      sum,
+    output      carry
 );
 
-reg [DATA_WIDTH-1'b1:0] RAM_MEM [0:ADDR_WIDTH-1'b1];
-reg [DATA_WIDTH-1'b1:0] rd_data_reg;
+assign sum = a ^ b;
+assign carry = a & b;
 
-assign rd_data = rd_data_reg;
+endmodule
 
-always @(posedge wr_clk ) begin
-    if(wr_en) begin
-        RAM_MEM[wr_addr] <= wr_data;
-    end
-    else begin
-        RAM_MEM[wr_addr] <= RAM_MEM[wr_addr];
-    end
-end 
 
-always @(posedge rd_clk) begin
-    if(rd_en) begin
-        rd_data_reg <= RAM_MEM[rd_addr];
-    end
-    else begin
-        rd_data_reg <= rd_data_reg;
-    end
-end 
+//
+// 全加器，考虑输入进位
+module full_adder(
+    input       a,
+    input       b,
+    input       cin,
+    output      sum,
+    output      cout
+);
 
-endmodule  
+assign sum = a ^ b ^ cin;
+assign cout = (a & b) | (cin & (a ^ b));
+
+endmodule

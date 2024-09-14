@@ -39,9 +39,7 @@ reg         rd_rstn;
 reg         rd_en;
 
 wire        wr_full;
-wire        almost_full;
 wire        rd_empty;
-wire        almost_empty;
 wire [9:0]  wr_count;
 wire [9:0]  rd_count;
 wire [7:0]  rd_data;
@@ -57,24 +55,20 @@ always #(RD_CLK_PERIOD/2) rd_clk = ~rd_clk;
 
 // Àý»¯Ä£¿é
 async_fifo #(
-    .ADDR_WIDTH('d10),
-    .DATA_WIDTH('d8),
-    .ALMOST_FULL_NUM('d768),
-    .ALMOST_EMPTY_NUM('d10)
+    .ADDR_WIDTH('d7),
+    .DATA_WIDTH('d8)
 ) async_fifo_inst(
     .wr_clk         (wr_clk),
     .wr_rstn        (wr_rstn),
     .wr_en          (wr_en),
     .wr_data        (wr_data),
     .wr_full        (wr_full),
-    .almost_full    (almost_full),
     .wr_count       (wr_count),
     .rd_clk         (rd_clk),
     .rd_rstn        (rd_rstn),
     .rd_en          (rd_en),
     .rd_data        (rd_data),
     .rd_empty       (rd_empty),
-    .almost_empty   (almost_empty),
     .rd_count       (rd_count)
 );
 
@@ -98,6 +92,8 @@ end
 initial begin
     rd_clk = 1'b0;
     rd_rstn = 1'b0;
+    #500;
+    rd_rstn = 1'b1;
     #2000;
     rd_rstn = 1'b1;
     #500;

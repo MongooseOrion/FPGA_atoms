@@ -92,6 +92,53 @@
   3. **优化时钟路径**：检查时钟路径，特别是在时钟树的分布上，确保时钟信号尽可能同时到达所有寄存器。减少或消除时钟抖动和时钟偏移（skew），可以减少保持时间违例的发生。
   4. **减少逻辑延迟**：减少数据路径上的组合逻辑延迟，可以通过卡诺图或者其他手段简化表达式，确保数据在时钟沿之后不会立即传播到寄存器输入端。可以通过重构逻辑或优化电路设计来实现。
 
+### setup slack 和 hold slack
+
+首先介绍几个概念：
+
+  * $T_{\text{skew}}$ ： 由于时钟线长度不同或负载不同，同一个时钟上升沿或下降沿到达相邻单元的时间可能有一些延迟，这个时间上的偏差就是时钟偏移（skew）；
+  * $\Delta T_{\text{jitter}}$ ：在理想情况下相邻两个时钟上升沿或下降沿应该间隔恒等于周期 $T_{\text{period}}$ ，但是实际上是不可能恰好是一个时钟周期，下一个边沿提早或更晚到达，这个时钟到来不确定的情况就是时钟抖动，它是一个范围；
+  * $T_{\text{co}}$ ：某个寄存器中从时钟发起到 $Q$ 端输出的时间；
+  * $T_{\text{setup(min)}}$ ：建立门限，指在时钟边沿到来前，数据需要保持稳定的**最小**时间；
+  * $T_{\text{hold(min)}}$ ：保持门限，指在时钟边沿到来后，数据需要保持稳定的**最小**时间；
+  * $T_{\text{data}}$ ：两级寄存器间的组合逻辑延迟，包括逻辑和走线延迟。
+
+<div align='center'><img src='.\pic\06b4cc8bc23c35e83abfaec67188d00a.png' width='500'></div>
+
+因此，数据到达第二级寄存器 $D$ 端的实际时间应该是前一级寄存器的时钟偏移时间加上前一级寄存器时钟输入到数据输出端延迟再加上两级寄存器间的传输延迟，即 
+
+$$\text{data arrival time} = T_{\text{clk1 skew(max)}} + T_{\text{co(max)}} + T_{\text{data(max)}}$$
+
+而数据在满足时序要求时应该到达的时间应该是在下一个时钟边沿来临前：
+
+$$\text{data require time} + T_{\text{setup(min)}}= T_{\text{period}} + T_{\text{clk2 skew(min)}}$$
+
+两者相减即为时间裕量 $\text{setup slack}$ ，**当其大于等于 0 时**，即要求的时间大于到达的时间，意味着路径没有建立时间违例（setup time violetion），因此可以计算满足时序要求时的建立时间门限：
+
+$$\text{setup slack} = \text{data require time} - \text{data arrival time} = 0$$
+
+$$\Rightarrow T_{\text{period}} + T_{\text{clk2 skew(min)}} - T_{\text{setup(min)}} - T_{\text{clk1 skew(max)}} - T_{\text{co(max)}} - T_{\text{data(max)}} = 0$$
+
+$$\Rightarrow T_{\text{setup(min)}} = T_{\text{period}} + T_{\text{clk2 skew(min)}} - T_{\text{clk1 skew(max)}} - T_{\text{co(max)}} - T_{\text{data(max)}}$$
+
+---
+
+同理，现在来解释在什么情况下保持时间违例（hold time violetion）。
+
+数据经两级寄存器最终在 $Q$ 端输出的时间应该是前一级的所有延迟加上第二级寄存器的下一个触发边沿所需时间：
+
+$$\text{data finish time} = T_{\text{clk1 skew(max)}} + T_{\text{co(max)}} + T_{\text{data(max)}} + T_{\text{period}}$$
+
+而数据传送结束要求的时间为第二个时钟边沿来临的时间加上保持时间门限：
+
+$$\text{require finish time} = T_{\text{period}} + T_{\text{clk2 skew(min)}} + T_{\text{hold(min)}}$$
+
+当要求的时间大于等于实际完成的时间时，即 $\text{hold slack} \ge 0$ 时，没有保持时间违例，此时保持门限为：
+
+$$T_{\text{clk1 skew(max)}} + T_{\text{co(max)}} + T_{\text{data(max)}} + T_{\text{period}} - T_{\text{period}} - T_{\text{clk2 skew(min)}} - T_{\text{hold(min)}} = 0$$
+
+$$\Rightarrow T_{\text{hold(min)}} = T_{\text{clk1 skew(max)}} + T_{\text{co(max)}} + T_{\text{data(max)}} - T_{\text{clk2 skew(min)}}$$
+
 ## 时序约束 
 
 下面介绍一些 FPGA 时序约束命令。
@@ -163,7 +210,7 @@ set_output_delay -clock [get_clocks sys_clk] -max {2.0} -min{0.5} [get_ports dat
 
 ### `set_false_path`
 
-此命令标记某些路径为“假路径”，告诉 STA 工具这些路径不参与时序分析。
+此命令标记某些路径为 “假路径” ，告诉 STA 工具这些路径不参与时序分析。
 
 当你确定某些逻辑路径不需要满足时序要求时，可以将这些路径标记为假路径。例如，跨时钟域的**异步**信号通常会被标记为假路径，以避免工具误报时序违例。通常有以下路径被设置为 false_path：
 
