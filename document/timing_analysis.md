@@ -398,3 +398,129 @@ define_attribute {n:cmos2_pclk} {PAP_CLOCK_DEDICATED_ROUTE} {FALSE}
       set_false_path -from [get_ports ready] -to [get_ports ready_high]
       set_input_delay -clock [get_clocks clk_1] -min 0.0 -max 5.0 [get_ports ready]
       ```
+
+
+## 解决建立时间违例的通用方案
+
+#### 时钟频率优化
+
+如果时钟速度过快导致数据无法在时钟周期内稳定，可以考虑降低时钟频率。通过调整 `create_clock` 或 `create_generated_clock` 命令的时钟周期，来降低时钟频率。
+
+#### 优化逻辑路径
+
+查看时序报告中每条路径的详细信息，找到存在延迟的关键路径（critical path）。然后通过减少逻辑级数、增加寄存器来缩短路径延迟。
+
+例如，时序报告某一某一路径存在时序问题：
+
+```tcl
+Startpoint  : power_on_delay_inst/cnt2[14]/opit_0_A2Q21/CLK 
+Endpoint    : power_on_delay_inst/cnt2[14]/opit_0_A2Q21/CE
+Path Group  : sys_clk
+Path Type   : max (slow corner)
+```
+
+在 Verilog 代码中，可以在问题路径中插入额外的寄存器，使该信号经过多个时钟周期传递，这样可以减少每个时钟周期内的传播延迟，缓解时序压力：
+
+```verilog
+reg [15:0] cnt2_pipe_1, cnt2_pipe_2, cnt2_pipe_3;  // 定义多个级联寄存器
+
+always @(posedge sys_clk or negedge resetn) begin
+    if (!resetn) begin
+        cnt2_pipe_1 <= 16'b0;
+        cnt2_pipe_2 <= 16'b0;
+        cnt2_pipe_3 <= 16'b0;
+    end else begin
+        cnt2_pipe_1 <= cnt2;           // 第一个时钟周期
+        cnt2_pipe_2 <= cnt2_pipe_1;    // 第二个时钟周期
+        cnt2_pipe_3 <= cnt2_pipe_2;    // 第三个时钟周期
+    end
+end
+```
+
+#### 多周期路径
+
+在某些情况下，信号的传播不一定需要在一个时钟周期内完成，工具会默认认为每条路径都是单周期的。如果某条路径实际上是多周期的（即信号跨多个时钟周期完成），你可以使用 `set_multicycle_path` 命令来约束它，这样工具会给信号更多的时间完成传输，从而减少时序违例的可能性。
+
+```tcl
+set_multicycle_path 2 -from [get_pins ...] -to [get_pins ...]
+```
+
+#### 增加输入/输出延迟
+
+如果时序违例发生在与外部接口相关的信号上，可以通过 `set_input_delay` 和 `set_output_delay` 命令来调整信号的输入和输出时序，确保外部设备和 FPGA 之间的时序匹配。
+
+#### 假路径和异步时钟组
+
+对于不需要进行时序检查的路径，可以使用 `set_false_path` 来告诉工具忽略该路径的时序检查。另外，跨时钟域时，可以使用 `set_clock_groups -asynchronous` 来定义异步时钟组，避免工具误判时序违例。
+
+```tcl
+set_false_path -from [get_pins ...] -to [get_pins ...]
+set_clock_groups -asynchronous -group [get_clocks clk1] -group [get_clocks clk2]
+```
+
+## 解决保持时间违例的通用方案
+
+#### 增加数据路径的延迟
+
+由于保持时间违例通常是数据到达捕获触发器过早导致的，因此可以通过增加数据路径的延迟来解决问题。方法如下：
+
+  * 插入小延迟单元：通过在数据路径中插入缓冲器或延迟单元（Delay Cell）来增加信号的传播时间。这可以帮助数据在保持时间内保持稳定。在具体的 FPGA 工具中，可以手动插入寄存器来增加数据路径的延迟。
+  * 优化布局布线：调整数据路径的布局或布线，使数据路径稍长，从而增加数据到达捕获触发器的时间。
+
+
+#### 调整时钟树（Clock Tree）
+
+时钟偏移或时钟抖动也是导致保持时间违例的常见原因之一。以下方法可以帮助优化时钟树：
+
+  * 插入时钟延迟：通过在时钟路径上插入延迟缓冲（例如 `BUFG` 和 `BUFR`）来增加时钟的延迟，这样可以使时钟信号的到达时间稍微晚一些，增加保持时间裕量。
+  * 平衡时钟树：检查时钟分配网络中的时钟偏移，确保时钟的分配路径平衡，减少时钟之间的不均衡。FPGA 工具通常可以自动优化时钟树，也可以通过设置约束来手动调整。
+
+BUFG（Global Clock Buffer）：BUFG 是一种**全局时钟缓冲器**，用于将时钟信号在 FPGA 芯片的整个全局时钟网络上分布。BUFG 通常用于需要全局时钟驱动的情况，比如 FPGA 中的顶层时钟输入。
+
+BUFR（Regional Clock Buffer）：BUFR 是一种**区域时钟缓冲器**，用于驱动较小范围的时钟网络（即时钟区域），比 BUFG 更局部化。BUFR 还可以进行时钟分频，并提供有限的延迟控制。对于某些设计，BUFR 可以提供灵活的时钟管理，特别是在需要不同区域内时钟同步时。一般适用于时钟的局部分布，而不需要在整个 FPGA 上传播。
+
+在 vivado 中可以这样调用：
+
+```verilog
+// BUFG 实例化
+BUFG u_bufg_inst (
+    .I(clk_in),    // 时钟输入
+    .O(clk_out)    // 时钟输出
+);
+
+// BUFR 实例化
+BUFR #(
+    .BUFR_DIVIDE("BYPASS")  // 可选分频：BYPASS, 1, 2, 4, 8
+) u_bufr_inst (
+    .I(clk_in),    // 时钟输入
+    .O(clk_out),   // 时钟输出
+    .CE(1'b1),     // 使能
+    .CLR(1'b0)     // 清除
+);
+```
+
+#### 设置 `set_max_delay` 限制
+
+使用 `set_max_delay` 来手动增加某些路径上的最大延迟，确保信号在路径上的传输时间不会太短。通常用于特定关键路径的保持时间优化。
+
+```tcl
+set_max_delay -from [get_ports data_in] -to [get_pins flipflop/Q] 2.0
+```
+
+上面的命令会将 `data_in` 到触发器输出 `flipflop/Q` 的最大延迟设置为 2 ns。
+
+#### 跨时钟域同步
+
+跨时钟域信号通常会遇到保持时间或建立时间问题。解决跨时钟域保持时间违例的常见方法包括：
+
+  * 双触发器同步器（单 bit 信号）
+  * 异步 FIFO（多 bit 信号）
+  * 握手协议
+
+#### 多周期路径
+
+有时，某些信号路径实际上是多周期路径，但工具默认按照单周期路径进行时序检查，导致产生保持时间违例。在这种情况下，可以使用 `set_multicycle_path` 命令告诉工具这些路径是多周期路径，从而放宽保持时间检查的约束。
+
+#### 调整寄存器位置
+
+通过重新布局，确保寄存器尽量靠近数据源或目的端，从而减少时钟和数据路径之间的偏差。这种方法可以有效减少保持时间违例。
