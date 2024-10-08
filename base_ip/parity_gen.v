@@ -23,48 +23,43 @@
 * FILE ENCODER TYPE: GBK
 * ========================================================================
 */
+// 奇偶校验生成器
 //
-// 4 位超前进位加法器
 `timescale 1ns/1ps
 
-`timescale 1ns / 1ps
-module carry_lookahead_adder#(
-    parameter DATA_WIDTH = 4
+module parity_gen#(
+    parameter DATA_WIDTH = 8,
+    parameter PARITY_TYPE = 1'b0        // 0: 奇校验 1: 偶校验
 )(
-  input  [DATA_WIDTH-1:0]   A_in  ,
-  input  [DATA_WIDTH-1:0]   B_in  ,
-  input                     C_in  ,
+    input                   clk,
+    input                   rstn,
+    input                   data_valid,
+    input [DATA_WIDTH-1:0]  data_in,
 
-  output                    CO    ,
-  output [DATA_WIDTH-1:0]   S
+    output reg                  data_ready_out,
+    output reg [DATA_WIDTH:0]   data_out
 );
-    
-wire [DATA_WIDTH-1:0]   G;
-wire [DATA_WIDTH-1:0]   P;
-wire [DATA_WIDTH-1:0]   C;
 
-// CO 表示最高位的进位
-assign CO = C[DATA_WIDTH-1];
+wire        check_bit;          // 检查 1 的个数，为 0 表示偶数个数
 
-generate
-    genvar i;
-    for(i = 0; i < DATA_WIDTH; i = i + 1) begin : default_name
-        // 进位生成信号，表示第 i 位的直接进位生成信号
-        assign G[i] = A_in[i] & B_in[i];
-        
-        // 进位传递信号，当 P[i] 为 1 时，第 i 位的加法会将来自前一位的进位传递到下一位
-        assign P[i] = A_in[i] ^ B_in[i];
-        
-        // C[i] 表示第 i 位的进位，S[i] 表示第 i 位的和
-        if(i==0) begin
-            assign C[i] = G[i] | P[i] & C_in;
-            assign S[i] = P[i] ^ C_in;
-        end
-        else begin
-            assign C[i] = G[i] | P[i] & C[i-1];
-            assign S[i] = P[i] ^ C[i-1];
-        end
+assign check_bit = (data_valid == 1'b1) ? ^data_in : 1'b0;
+
+
+// 生成奇偶校验信号
+always @(posedge clk or negedge rstn) begin
+    if(!rstn) begin
+        data_ready_out <= 1'b0;
+        data_out <= 'd0;
     end
-endgenerate
-    
-endmodule
+    else if(data_valid == 1'b1) begin
+        data_ready_out <= 1'b1;
+        data_out = {~(PARITY_TYPE ^ check_bit), data_in};
+    end
+    else begin
+        data_ready_out <= 1'b0;
+        data_out <= data_out;
+    end
+end
+
+
+endmodule 

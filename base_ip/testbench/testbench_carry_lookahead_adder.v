@@ -23,48 +23,60 @@
 * FILE ENCODER TYPE: GBK
 * ========================================================================
 */
+// 超前进位加法器验证
 //
-// 4 位超前进位加法器
 `timescale 1ns/1ps
 
-`timescale 1ns / 1ps
-module carry_lookahead_adder#(
-    parameter DATA_WIDTH = 4
-)(
-  input  [DATA_WIDTH-1:0]   A_in  ,
-  input  [DATA_WIDTH-1:0]   B_in  ,
-  input                     C_in  ,
+module testbench_carry_lookahead_adder(
 
-  output                    CO    ,
-  output [DATA_WIDTH-1:0]   S
 );
-    
-wire [DATA_WIDTH-1:0]   G;
-wire [DATA_WIDTH-1:0]   P;
-wire [DATA_WIDTH-1:0]   C;
 
-// CO 表示最高位的进位
-assign CO = C[DATA_WIDTH-1];
+parameter CLK_PERIOD = 20;
 
-generate
-    genvar i;
-    for(i = 0; i < DATA_WIDTH; i = i + 1) begin : default_name
-        // 进位生成信号，表示第 i 位的直接进位生成信号
-        assign G[i] = A_in[i] & B_in[i];
-        
-        // 进位传递信号，当 P[i] 为 1 时，第 i 位的加法会将来自前一位的进位传递到下一位
-        assign P[i] = A_in[i] ^ B_in[i];
-        
-        // C[i] 表示第 i 位的进位，S[i] 表示第 i 位的和
-        if(i==0) begin
-            assign C[i] = G[i] | P[i] & C_in;
-            assign S[i] = P[i] ^ C_in;
-        end
-        else begin
-            assign C[i] = G[i] | P[i] & C[i-1];
-            assign S[i] = P[i] ^ C[i-1];
-        end
-    end
-endgenerate
-    
+reg   clk;
+reg   rstn;
+reg [7:0] a_in;
+reg [7:0]  b_in;
+reg   cin_in;
+
+wire  co;
+wire [7:0] s;
+
+carry_lookahead_adder#(
+    .DATA_WIDTH (8)
+) carry_lookahead_adder_inst(
+    .A_in       (a_in),
+    .B_in       (b_in),
+    .C_in     (cin_in),
+    .CO         (co),
+    .S          (s)
+);
+
+always #(CLK_PERIOD/2) clk = ~clk;
+
+initial begin
+    clk = 0;
+    rstn = 0;
+
+    #100;
+    rstn = 1;
+    a_in = 8'd23;
+    b_in = 8'd45;
+    cin_in = 1'b1;
+
+    #100;
+    a_in = 8'd254;
+    b_in = 8'd1;
+    cin_in = 1'b0;
+
+    #100;
+    a_in = 8'd255;
+    b_in = 8'd1;
+    cin_in = 1'b1;
+
+    #100;
+    $stop;
+
+end
+
 endmodule

@@ -266,7 +266,7 @@ set_clock_uncertainty {0.200} [get_clocks {cmos1_pclk}]  -setup -hold
 
 这个命令告诉 FPGA 时序分析工具，针对 `cmos1_pclk` 时钟信号，在进行**建立时间**和**保持时间**分析时，都要考虑 0.200ns 的时钟不确定性。这意味着工具在时序分析时，会假设时钟可能有 0.200ns 的时间误差，从而在时序计算中引入额外的裕量。
 
-### `set_generated_clock`
+### `create_generated_clock`
 
 此命令定义由主时钟派生出的次级时钟信号，例如通过 PLL、MMCM、分频器等生成的时钟。
 
@@ -445,7 +445,7 @@ end
 set_multicycle_path 2 -from [get_pins ...] -to [get_pins ...]
 ```
 
-#### 增加输入/输出延迟
+#### 减小输入/输出延迟
 
 如果时序违例发生在与外部接口相关的信号上，可以通过 `set_input_delay` 和 `set_output_delay` 命令来调整信号的输入和输出时序，确保外部设备和 FPGA 之间的时序匹配。
 

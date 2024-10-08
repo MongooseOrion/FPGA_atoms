@@ -23,48 +23,53 @@
 * FILE ENCODER TYPE: GBK
 * ========================================================================
 */
+// 脉冲异步时钟同步器验证代码
 //
-// 4 位超前进位加法器
 `timescale 1ns/1ps
 
-`timescale 1ns / 1ps
-module carry_lookahead_adder#(
-    parameter DATA_WIDTH = 4
-)(
-  input  [DATA_WIDTH-1:0]   A_in  ,
-  input  [DATA_WIDTH-1:0]   B_in  ,
-  input                     C_in  ,
+module testbench_pulse_sync(
 
-  output                    CO    ,
-  output [DATA_WIDTH-1:0]   S
 );
-    
-wire [DATA_WIDTH-1:0]   G;
-wire [DATA_WIDTH-1:0]   P;
-wire [DATA_WIDTH-1:0]   C;
 
-// CO 表示最高位的进位
-assign CO = C[DATA_WIDTH-1];
+parameter CLK_PERIOD_IN = 10;
+parameter CLK_PERIOD_OUT = 24;
 
-generate
-    genvar i;
-    for(i = 0; i < DATA_WIDTH; i = i + 1) begin : default_name
-        // 进位生成信号，表示第 i 位的直接进位生成信号
-        assign G[i] = A_in[i] & B_in[i];
-        
-        // 进位传递信号，当 P[i] 为 1 时，第 i 位的加法会将来自前一位的进位传递到下一位
-        assign P[i] = A_in[i] ^ B_in[i];
-        
-        // C[i] 表示第 i 位的进位，S[i] 表示第 i 位的和
-        if(i==0) begin
-            assign C[i] = G[i] | P[i] & C_in;
-            assign S[i] = P[i] ^ C_in;
-        end
-        else begin
-            assign C[i] = G[i] | P[i] & C[i-1];
-            assign S[i] = P[i] ^ C[i-1];
-        end
-    end
-endgenerate
-    
+reg     clk_in;
+reg     pulse_in;
+reg     clk_out;
+
+wire    pulse_out;
+
+pulse_sync pulse_sync_inst(
+    .clk_in     (clk_in),
+    .pulse_in   (pulse_in),
+    .clk_out    (clk_out),
+    .pulse_out  (pulse_out)
+);
+
+always #(CLK_PERIOD_IN/2) clk_in = ~clk_in;
+always #(CLK_PERIOD_OUT/2) clk_out = ~clk_out;
+
+initial begin
+    clk_in = 1'b0;
+    pulse_in = 1'b1;
+    clk_out = 1'b0;
+
+    #100;
+    @(posedge clk_in)
+    pulse_in = 1'b0;
+    @(posedge clk_in)
+    pulse_in = 1'b1;
+    #100;
+    @(posedge clk_in)
+    pulse_in = 1'b0;
+    @(posedge clk_in)
+    pulse_in = 1'b1;
+
+    #100;
+
+    $stop;
+end
+
+
 endmodule

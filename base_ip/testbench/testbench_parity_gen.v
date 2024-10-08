@@ -23,48 +23,62 @@
 * FILE ENCODER TYPE: GBK
 * ========================================================================
 */
+// å¥‡å¶æ ¡éªŒç”Ÿæˆå™¨éªŒè¯
 //
-// 4 Î»³¬Ç°½øÎ»¼Ó·¨Æ÷
 `timescale 1ns/1ps
 
-`timescale 1ns / 1ps
-module carry_lookahead_adder#(
-    parameter DATA_WIDTH = 4
-)(
-  input  [DATA_WIDTH-1:0]   A_in  ,
-  input  [DATA_WIDTH-1:0]   B_in  ,
-  input                     C_in  ,
+module testbench_parity_gen(
 
-  output                    CO    ,
-  output [DATA_WIDTH-1:0]   S
 );
-    
-wire [DATA_WIDTH-1:0]   G;
-wire [DATA_WIDTH-1:0]   P;
-wire [DATA_WIDTH-1:0]   C;
 
-// CO ±íÊ¾×î¸ßÎ»µÄ½øÎ»
-assign CO = C[DATA_WIDTH-1];
+parameter CLK_PERIOD = 20;
 
-generate
-    genvar i;
-    for(i = 0; i < DATA_WIDTH; i = i + 1) begin : default_name
-        // ½øÎ»Éú³ÉĞÅºÅ£¬±íÊ¾µÚ i Î»µÄÖ±½Ó½øÎ»Éú³ÉĞÅºÅ
-        assign G[i] = A_in[i] & B_in[i];
-        
-        // ½øÎ»´«µİĞÅºÅ£¬µ± P[i] Îª 1 Ê±£¬µÚ i Î»µÄ¼Ó·¨»á½«À´×ÔÇ°Ò»Î»µÄ½øÎ»´«µİµ½ÏÂÒ»Î»
-        assign P[i] = A_in[i] ^ B_in[i];
-        
-        // C[i] ±íÊ¾µÚ i Î»µÄ½øÎ»£¬S[i] ±íÊ¾µÚ i Î»µÄºÍ
-        if(i==0) begin
-            assign C[i] = G[i] | P[i] & C_in;
-            assign S[i] = P[i] ^ C_in;
-        end
-        else begin
-            assign C[i] = G[i] | P[i] & C[i-1];
-            assign S[i] = P[i] ^ C[i-1];
-        end
-    end
-endgenerate
-    
+reg    clk;
+reg    rstn;
+reg    data_valid;
+reg [7:0] data_in;
+
+wire   data_ready_out;
+wire [8:0] data_out;
+
+parity_gen#(
+    .DATA_WIDTH     (8),
+    .PARITY_TYPE    (1'b1)
+) parity_gen_inst(
+    .clk            (clk),
+    .rstn           (rstn),
+    .data_valid     (data_valid),
+    .data_in        (data_in),
+    .data_ready_out (data_ready_out),
+    .data_out       (data_out)
+);
+
+always #(CLK_PERIOD/2) clk = ~clk;
+
+initial begin
+    clk = 0;
+    rstn = 0;
+    data_valid = 0;
+    data_in = 8'b0;
+
+    #100;
+    rstn = 1;
+    #40;
+    @(posedge clk)
+    data_valid = 1'b1;
+    data_in = 8'b10101010;
+    @(posedge clk)
+    data_valid = 1'b0;
+
+    #100;
+    @(posedge clk)
+    data_valid = 1'b1;
+    data_in = 8'b10101011;
+    @(posedge clk)
+    data_valid = 1'b0;
+
+    #100;
+    $stop;
+end
+
 endmodule

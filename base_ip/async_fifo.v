@@ -101,7 +101,7 @@ reg [ADDR_WIDTH:0]          addr_w2r_2;
 reg [ADDR_WIDTH-1'b1:0]     almost_full_count   ;
 reg [ADDR_WIDTH-1'b1:0]     almost_empty_count  ;
 
-// 注意不能减 1，因为格雷码要求必须是 2^n 个数据
+// 注意不能减 1，因为高一位用于空满信号判断
 wire [ADDR_WIDTH:0] wr_addr_gray;
 wire [ADDR_WIDTH:0] rd_addr_gray;
 
