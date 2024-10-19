@@ -49,3 +49,5 @@
 **/project.old/
 
 /system_project/ethernet_speed_test/
+
+!/pango_transplant/hdmi_pcie_trans/project.old/
