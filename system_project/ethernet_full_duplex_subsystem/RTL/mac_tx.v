@@ -7,24 +7,22 @@
 `timescale 1 ns/1 ns
 module mac_tx
        (
-           input                  clk,
-           input                  rst_n,
-           
-           input      [31:0]      crc_result ,
-           output reg             crcen,
-           output reg             crcre,
-           output reg [7:0]       crc_din,
-           
-           input                  mac_tx_req,
-           input      [7:0]       mac_frame_data,  //data from ip or arp
-           input                  mac_tx_ready,    //ready from ip or arp
-           input                  mac_tx_end,      //end from ip or arp
-           
-           output reg             mac_tx_ack,
-           output reg [7:0]       mac_tx_data,
-           output reg             mac_send_end,
-           output reg             mac_data_valid,
-           output reg             mac_data_req     //request data from arp or ip
+         input                  clk,
+         input                  rst_n,
+         
+         input      [31:0]      crc_result ,
+         output reg             crcen,
+         output reg             crcre,
+         output reg [7:0]      crc_din,
+         
+         input      [7:0]       mac_frame_data,  //data from ip or arp
+         input                  mac_tx_ready,    //ready from ip or arp
+         input                  mac_tx_end,      //end from ip or arp
+         
+         output reg [7:0]       mac_tx_data,
+         output reg             mac_send_end,
+         output reg             mac_data_valid,
+         output reg             mac_data_req     //request data from arp or ip
          
        ) ;
        
@@ -61,13 +59,7 @@ always @(posedge clk or negedge rst_n)
 always @(*)
   begin
     case(send_state)
-      SEND_IDLE    :
-	    begin
-		  if (mac_tx_req)
-		    send_next_state <= SEND_START ;
-		  else
-		    send_next_state <= SEND_IDLE ;
-	    end
+    
       SEND_START     :
         begin
           if (mac_tx_ready)
@@ -99,21 +91,13 @@ always @(*)
             send_next_state <= SEND_CRC ;
         end
       SEND_END        :
-        send_next_state <= SEND_IDLE  ;
+        send_next_state <= SEND_START  ;
       default         :
-        send_next_state <= SEND_IDLE  ;
+        send_next_state <= SEND_START  ;
     endcase
   end
   
- always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      mac_tx_ack <= 1'b0 ;
-    else if (send_state == SEND_START)
-      mac_tx_ack <= 1'b1 ;
-    else
-      mac_tx_ack <= 1'b0 ;
-  end 
+  
   
 always @(posedge clk or negedge rst_n)
   begin
@@ -241,12 +225,12 @@ always @(posedge clk or negedge rst_n)
     else if (send_state == SEND_CRC)
       begin
         case(mac_tx_cnt)
-          4'd0    : mac_tx_data <= mac_tx_data_tmp ;
-          4'd1    : mac_tx_data <= {~crc[24], ~crc[25], ~crc[26], ~crc[27], ~crc[28], ~crc[29], ~crc[30], ~crc[31]} ;
-          4'd2    : mac_tx_data <= {~crc[16], ~crc[17], ~crc[18], ~crc[19], ~crc[20], ~crc[21], ~crc[22], ~crc[23]} ;
-          4'd3    : mac_tx_data <= {~crc[8], ~crc[9], ~crc[10], ~crc[11], ~crc[12], ~crc[13], ~crc[14], ~crc[15]}   ;
-          4'd4    : mac_tx_data <= {~crc[0], ~crc[1], ~crc[2], ~crc[3], ~crc[4], ~crc[5], ~crc[6], ~crc[7]}   ;
-          default : mac_tx_data <= 8'h00 ;
+          4'd0    :  mac_tx_data <= mac_tx_data_tmp ;
+          4'd1    :  mac_tx_data <= {~crc[24], ~crc[25], ~crc[26], ~crc[27], ~crc[28], ~crc[29], ~crc[30], ~crc[31]} ;
+          4'd2    :  mac_tx_data <= {~crc[16], ~crc[17], ~crc[18], ~crc[19], ~crc[20], ~crc[21], ~crc[22], ~crc[23]} ;
+          4'd3    :  mac_tx_data <= {~crc[8], ~crc[9], ~crc[10], ~crc[11], ~crc[12], ~crc[13], ~crc[14], ~crc[15]}   ;
+          4'd4    :  mac_tx_data <= {~crc[0], ~crc[1], ~crc[2], ~crc[3], ~crc[4], ~crc[5], ~crc[6], ~crc[7]}   ;
+          default :  mac_tx_data <= 8'h00 ;
         endcase
       end
     else

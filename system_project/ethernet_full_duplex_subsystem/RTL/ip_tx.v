@@ -10,7 +10,7 @@ module ip_tx
        (
          input                clk                    ,
          input                rst_n                  ,
-         
+         input  [15:0]        identify_code,
          input  [47:0]        destination_mac_addr   ,  //destination mac address
          input  [47:0]        source_mac_addr        ,  //source mac address
          input  [7:0]         TTL,
@@ -20,14 +20,11 @@ module ip_tx
          input  [7:0]         upper_layer_data,         //data from udp or icmp
          output reg           upper_data_req,        //request data from udp or icmp
          
-         input                mac_tx_ack,
-         input                mac_send_end,
          input                mac_data_req,
          input                upper_tx_ready,
          input                ip_tx_req,
          input  [15:0]        ip_send_data_length ,
          
-         output reg           ip_tx_ack,
          output               ip_tx_busy,
          output reg           ip_tx_ready,
          output reg [7:0]     ip_tx_data,
@@ -39,24 +36,21 @@ localparam ip_version    = 4'h4     ;  //ipv4
 localparam header_len    = 4'h5     ;  //header length
 
 reg            checksum_finish ;
-reg  [15:0]    identify_code ;
+
 reg  [15:0]    ip_send_data_length_d0 ;
 reg  [15:0]    ip_send_cnt ;
 reg  [15:0]    timeout ;
 reg  [3:0]     wait_cnt ;
-reg            mac_send_end_d0 ;
 
-parameter IDLE             = 8'b0000_0001 ;
-parameter START            = 8'b0000_0010 ;
-parameter WAIT_DATA_LENGTH = 8'b0000_0100 ;
-parameter GEN_CHECKSUM     = 8'b0000_1000 ;
-parameter SEND_WAIT        = 8'b0001_0000 ;
-parameter WAIT_MAC         = 8'b0010_0000 ;
-parameter IP_SEND          = 8'b0100_0000 ;
-parameter IP_END           = 8'b1000_0000 ;
+parameter IDLE             = 6'b000_001 ;
+parameter WAIT_DATA_LENGTH = 6'b000_010 ;
+parameter GEN_CHECKSUM     = 6'b000_100 ;
+parameter SEND_WAIT        = 6'b001_000 ;
+parameter WAIT_MAC         = 6'b010_000 ;
+parameter IP_SEND          = 6'b100_000 ;
 
-reg [7:0]    state  ;
-reg [7:0]    next_state ;
+reg [5:0]    state  ;
+reg [5:0]    next_state ;
 
 always @(posedge clk or negedge rst_n)
   begin
@@ -72,17 +66,11 @@ always @(*)
       IDLE            :
         begin
           if (ip_tx_req)
-            next_state <= START ;
+            next_state <= WAIT_DATA_LENGTH ;
           else
             next_state <= IDLE ;
         end
-      START            :
-        begin
-          if (mac_tx_ack)
-            next_state <= WAIT_DATA_LENGTH ;
-          else
-            next_state <= START ;
-        end  
+        
       WAIT_DATA_LENGTH   :
         begin
           if (wait_cnt == 4'd7)
@@ -119,39 +107,16 @@ always @(*)
       IP_SEND         :
         begin
           if (ip_send_cnt == 14 + ip_send_data_length_d0)
-            next_state <= IP_END ;
-          else
-            next_state <= IP_SEND ;
-        end
-	  IP_END         :
-        begin
-          if (mac_send_end_d0)
             next_state <= IDLE ;
           else
-            next_state <= IP_END ;
+            next_state <= IP_SEND ;
         end
       default          :
         next_state <= IDLE ;
     endcase
   end
- 
-always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      mac_send_end_d0 <= 1'b0 ;
-    else 
-      mac_send_end_d0 <= mac_send_end ;
-  end  
- 
-always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      ip_tx_ack <= 1'b0 ;
-    else if (state == WAIT_DATA_LENGTH)
-      ip_tx_ack <= 1'b1 ;
-    else
-      ip_tx_ack <= 1'b0 ;
-  end  
+  
+  
   
 always @(posedge clk or negedge rst_n)
   begin
@@ -207,14 +172,14 @@ always @(posedge clk or negedge rst_n)
       wait_cnt <= 4'd0 ;
   end
   
-always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      identify_code  <= 16'd0 ;
-    else if (ip_tx_end)
-      identify_code  <= identify_code + 1'b1 ;
-  end
-  
+//always @(posedge clk or negedge rst_n)
+//begin
+//  if (~rst_n)
+//    identify_code  <= 16'd0 ;
+//  else if (ip_tx_end)
+//    identify_code  <= identify_code + 1'b1 ;
+//end
+
 always @(posedge clk or negedge rst_n)
   begin
     if (~rst_n)

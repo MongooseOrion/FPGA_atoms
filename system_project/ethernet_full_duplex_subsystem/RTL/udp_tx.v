@@ -6,41 +6,35 @@
 `timescale 1 ns/1 ns
 module udp_tx
        (
-          input                    clk,
-          input                    rst_n,
-          
-          input      [31:0]        source_ip_addr,
-          input      [31:0]        destination_ip_addr,
-          
-          input      [15:0]        udp_send_source_port,
-          input      [15:0]        udp_send_destination_port,
-          input      [15:0]        udp_send_data_length,
-          
-          input      [7:0]         ram_wr_data,        //write data to udp tx ram
-          input                    ram_wr_en,         //write en
-          output reg               udp_ram_data_req,      //request data written to ram
-          input                    mac_send_end,      //mac send finished
-          input                    udp_tx_req,
-          output reg               ip_tx_req,         //udp reqest ip
-          input                    ip_tx_ack,         //ip ack for udp transfer
-          input                    udp_data_req,
-          output reg               udp_tx_ready,
-          output reg [7:0]         udp_tx_data,
-          output reg               udp_tx_end,
-          output                   almost_full,
+         input                    clk,
+         input                    rst_n,
          
-    output  al_full,
-    output  emp_sum,
-    output checksum_wr,
-    output [4:0] use_rd
-        
+         input      [31:0]        source_ip_addr,
+         input      [31:0]        destination_ip_addr,
+         
+         input      [15:0]        udp_send_source_port,
+         input      [15:0]        udp_send_destination_port,
+         input      [15:0]        udp_send_data_length,
+         
+         
+         input      [7:0]         fifo_data,                //FIFO中的数据
+         output reg               fifo_rd_en,               //FIFO读使能
+         input      [7:0]         ram_wr_data,
+         input                    ram_wr_en,
+         output reg               udp_ram_data_req,
+         
+         input                    udp_tx_req,
+         input                    udp_data_req,
+         output reg               udp_tx_ready,
+         output reg [7:0]         udp_tx_data,
+         output                   udp_tx_end
+         
        ) ;
        
-
-reg                       ram_rd_en ;
-wire [4:0]                usedw     ;
-reg  [4:0]                fifo_count ;
-
+reg  [3:0]                header_checksum_cnt ;
+reg                       checksum_finish ;
+reg  [10:0]               ram_write_addr  ;
+reg  [10:0]               ram_read_addr   ;
 reg  [7:0]                ram_rdata_d0  ;
 reg  [7:0]                ram_rdata_d1  ;
 reg  [7:0]                ram_wr_data_d0 ;
@@ -55,47 +49,21 @@ reg  [15:0]               udp_total_data_length ;//data length when transfer
 
 reg [15:0]                timeout ;
 
-reg                       mac_send_end_d0 ;
 
 
 
-parameter IDLE              = 6'b000001 ;
-parameter START             = 6'b000010 ;
-parameter LEN_LATCH         = 6'b000100 ;
-parameter SEND_WAIT         = 6'b001000 ;
-parameter UDP_SEND          = 6'b010000 ;
-parameter UDP_END           = 6'b100000 ;
+parameter IDLE              = 7'b000_0001 ;
+parameter HEADER_CHECKSUM   = 7'b000_0010 ;
+parameter GEN_CHECKSUM      = 7'b000_0100 ;
+parameter GEN_ODD_CHECKSUM  = 7'b000_1000 ;
+parameter GEN_CHECKSUM_END  = 7'b001_0000 ;
+parameter SEND_WAIT         = 7'b010_0000 ;
+parameter UDP_SEND          = 7'b100_0000 ;
 
 
-reg [5:0]    state  ;
-reg [5:0]    next_state ;
+reg [6:0]    state  ;
+reg [6:0]    next_state ;
 
-
-  reg  [16:0]        checksum_tmp0   ;
-  reg  [16:0]        checksum_tmp1   ;
-  reg  [16:0]        checksum_tmp2   ;
-  reg  [16:0]        checksum_tmp3   ;
-  reg  [16:0]        checksum_tmp4   ;
-  reg  [17:0]        checksum_tmp5   ;
-  reg  [17:0]        checksum_tmp6   ;
-  reg  [18:0]        checksum_tmp7   ;
-  reg  [19:0]        checksum_tmp8   ;
-                                     
-  reg  [31:0]        checksum_tmp9   ;
-                                     
-  reg  [31:0]        checksum_buf    ;
-  reg  [31:0]        check_out       ;
-  reg  [31:0]        checkout_buf    ;
-  wire [15:0]        checksum        ;
-  reg  [15:0]        checksum_cnt    ;
-                                     
-  reg                checksum_wr     ;
-  reg                checksum_rd     ;
-  reg  [31:0]        checksum_in     ;
-  reg                checksum_finish ;
-  reg  [15:0]        checksum_udp_len ;
-  wire [31:0]        checksum_q       ;
-  
 
 always @(posedge clk or negedge rst_n)
   begin
@@ -110,24 +78,13 @@ always @(*)
     case(state)
       IDLE            :
         begin
-       //  if (usedw > 5'd0)
-     if (use_rd> 5'd0)
-            next_state <= START ;
+          if (udp_tx_req)
+            next_state <= SEND_WAIT ;
           else
             next_state <= IDLE ;
-        end		
-      START            :
-        begin
-          next_state <= LEN_LATCH ;
-        end  
-      LEN_LATCH   :
-	    begin
-		  if (ip_tx_ack)
-		    next_state <= SEND_WAIT ;
-		  else
-		    next_state <= LEN_LATCH ;
-		end
-      SEND_WAIT      :
+        end
+        
+      SEND_WAIT   :
         begin
           if (udp_data_req)
             next_state <= UDP_SEND ;
@@ -137,63 +94,19 @@ always @(*)
             next_state <= SEND_WAIT ;
         end
         
-      UDP_SEND       :
+      UDP_SEND    :
         begin
           if (udp_send_cnt == udp_total_data_length)
-            next_state <= UDP_END ;
+            next_state <= IDLE ;
           else
             next_state <= UDP_SEND ;
         end
-	  UDP_END       :
-        begin
-          if (mac_send_end_d0)
-            next_state <= IDLE ;
-          else
-            next_state <= UDP_END ;
-        end
-      default        :
+      default     :
         next_state <= IDLE ;
     endcase
-  end
-
-
-always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      fifo_count <= 5'd0 ;
-    else
-      fifo_count <= usedw ;
-  end 
-always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      checksum_rd <= 1'b0 ;
-    else if (state == IDLE && state != next_state)
-   // else if (state == START && state != next_state)
-      checksum_rd <= 1'b1 ;
-	else
-	  checksum_rd <= 1'b0 ;
   end  
+  
 
-always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      ip_tx_req <= 1'b0 ;
-    else if (state == LEN_LATCH)
-      ip_tx_req <= 1'b1 ;
-	else 
-	  ip_tx_req <= 1'b0 ;
-  end
-  
-always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      mac_send_end_d0 <= 1'b0 ;
-    else 
-      mac_send_end_d0 <= mac_send_end ;
-  end    
-  
-  
 always @(posedge clk or negedge rst_n)
   begin
     if (~rst_n)
@@ -205,6 +118,16 @@ always @(posedge clk or negedge rst_n)
   end
   
   
+//timeout counter
+always @(posedge clk or negedge rst_n)
+  begin
+    if (~rst_n)
+      ram_write_addr <= 11'd0 ;
+    else if (ram_wr_en)
+      ram_write_addr <= ram_write_addr + 1'b1 ;
+    else
+      ram_write_addr <= 11'd0 ;
+  end
   
   
 //timeout counter
@@ -217,468 +140,114 @@ always @(posedge clk or negedge rst_n)
     else
       timeout <= 16'd0 ;
   end
- 
-//udp_tx_data_fifo tx_data_fifo
-//(
-//	.aclr          (~rst_n         ),
-//	.clock         (clk            ),
-//	.data          (ram_wr_data    ),
-//	.rdreq         (ram_rd_en      ),
-//	.wrreq         (ram_wr_en      ),
-//	.q             (ram_rdata      ),
-//	.usedw         (               ),
-//	.almost_full   (almost_full    )
-//	);  
-udp_tx_data_fifo tx_data_fifo(
-  
-    .clk(clk),
-    .rst(~rst_n),
-    .wr_en(ram_wr_en),
-    .wr_data(ram_wr_data),
-    .wr_full(),
-    .wr_water_level(),
-    .almost_full(almost_full),
-    .rd_en(ram_rd_en),
-    .rd_data(ram_rdata),
-    .rd_empty(),
-    .rd_water_level(),
-    .almost_empty()
-);
-
-
- always @(posedge clk or negedge rst_n)
-    begin
-      if(rst_n == 1'b0)
-        begin
-          ram_wr_data_d0 <= 8'd0 ;
-          ram_wr_data_d1 <= 8'd0 ;
-        end
-      else
-        begin
-          ram_wr_data_d0 <= ram_wr_data ;
-          ram_wr_data_d1 <= ram_wr_data_d0 ;
-        end
-    end
-  //ram signal
-  
-  always @(posedge clk or negedge rst_n)
-    begin
-      if(rst_n == 1'b0)
-        begin
-          ram_rdata_d0 <= 8'd0 ;
-          ram_rdata_d1 <= 8'd0 ;
-        end
-      else
-        begin
-          ram_rdata_d0 <= ram_rdata ;
-          ram_rdata_d1 <= ram_rdata_d0 ;
-        end
-    end
-    
-    
-    
-  always @(posedge clk or negedge rst_n)
-    begin
-      if(rst_n == 1'b0)
-        ram_rd_en <= 1'b0 ;
-      else if (state == UDP_SEND && udp_send_cnt > 4 && udp_send_cnt < udp_data_length - 3)
-        ram_rd_en <= 1'b1 ;
-      else
-        ram_rd_en <= 1'b0 ;
-    end
-    
-    
-  //checksum counter
-  always @(posedge clk or negedge rst_n)
-    begin
-      if (~rst_n)
-        udp_send_cnt  <= 16'd0 ;
-      else if (state == UDP_SEND)
-        udp_send_cnt <= udp_send_cnt + 1'b1 ;
-      else
-        udp_send_cnt <= 16'd0 ;
-    end
-    
-  
-  
-  reg [15:0]   fifo_udp_len ;
-  always @(posedge clk or negedge rst_n)
-   begin
-     if (~rst_n)
-       fifo_udp_len  <= 16'd0 ;
-     else
-       fifo_udp_len <= checksum_q[31:16] ;
-   end
-  //generate udp and ip data length
-  always @(posedge clk or negedge rst_n)
-    begin
-      if(rst_n == 1'b0)
-        begin
-          udp_total_data_length <= 16'd0 ;
-          udp_data_length <= 16'd0 ;
-        end
-      else if (state == LEN_LATCH)
-        begin
-          udp_data_length <= fifo_udp_len ;
-          if (fifo_udp_len < 26)
-            udp_total_data_length <= 26 ;
-          else
-            udp_total_data_length <= fifo_udp_len  ;
-        end
-    end
-    
-  
-  
-  //*****************************************************************************************//
-  //send udp data
-  //*****************************************************************************************//
-  always @(posedge clk or negedge rst_n)
-    begin
-      if (~rst_n)
-        udp_tx_data <= 8'h00  ;
-      else if (state == UDP_SEND)
-        begin
-          case(udp_send_cnt)
-            16'd0   :  udp_tx_data <= udp_send_source_port[15:8] ;
-            16'd1   :  udp_tx_data <= udp_send_source_port[7:0] ;
-            16'd2   :  udp_tx_data <= udp_send_destination_port[15:8] ;
-            16'd3   :  udp_tx_data <= udp_send_destination_port[7:0] ;
-            16'd4   :  udp_tx_data <= udp_data_length[15:8] ;
-            16'd5   :  udp_tx_data <= udp_data_length[7:0] ;
-            16'd6   :  udp_tx_data <= checksum_q[15:8] ;
-            16'd7   :  udp_tx_data <= checksum_q[7:0]  ;
-            default :
-              begin
-                if (udp_data_length < 26)
-                  begin
-                    if (udp_send_cnt <= udp_data_length - 1)
-                      udp_tx_data <= ram_rdata_d0 ;
-                    else
-                      udp_tx_data <= 8'h00 ;
-                  end
-                else
-                  udp_tx_data <= ram_rdata_d0 ;
-                  //udp_tx_data <= ram_rdata ;
-              end
-          endcase
-        end
-      else
-        udp_tx_data <= 8'h00 ;
-    end
-  
-    
-  //*****************************************************************************************//
-  //generate udp checksum
-  //*****************************************************************************************//
-  localparam CK_IDLE           = 6'b000001 ;
-  localparam HEADER_CHECKSUM   = 6'b000010 ;
-  localparam GEN_CHECKSUM      = 6'b000100 ;
-  localparam GEN_ODD_CHECKSUM  = 6'b001000 ;
-  localparam GEN_CHECKSUM_END  = 6'b010000 ;
-  localparam CHECKSUM_WAIT     = 6'b100000 ;
-  
-  reg [5:0]    ck_state  ;
-  reg [5:0]    ck_next_state ;
-  
-  always @(posedge clk or negedge rst_n)
-    begin
-      if (~rst_n)
-        ck_state  <=  IDLE  ;
-      else
-        ck_state  <= ck_next_state ;
-    end
-    
-  always @(*)
-    begin
-      case(ck_state)
-        CK_IDLE            :
-          begin
-            if (udp_tx_req)
-              ck_next_state <= HEADER_CHECKSUM ;
-            else
-              ck_next_state <= CK_IDLE ;
-          end        
-        HEADER_CHECKSUM :
-          begin
-            if (checksum_cnt == 16'd8)
-              begin
-                if (checksum_udp_len == 16'd9)
-                  ck_next_state <= GEN_ODD_CHECKSUM ;
-                else
-                  ck_next_state <= GEN_CHECKSUM ;
-              end
-            else
-              ck_next_state <= HEADER_CHECKSUM ;
-          end
-        GEN_CHECKSUM    :
-          begin
-            if (checksum_udp_len[0] == 1'b0 && checksum_cnt == checksum_udp_len - 9)
-              ck_next_state <= GEN_CHECKSUM_END ;
-            else if (checksum_udp_len[0] == 1'b1 && checksum_cnt == checksum_udp_len - 10)
-              ck_next_state <= GEN_ODD_CHECKSUM ;
-            else
-              ck_next_state <= GEN_CHECKSUM ;
-          end
-        GEN_ODD_CHECKSUM:
-          begin
-            if (checksum_cnt == checksum_udp_len - 9)
-              ck_next_state <= GEN_CHECKSUM_END ;
-            else
-              ck_next_state <= GEN_ODD_CHECKSUM ;
-          end
-        GEN_CHECKSUM_END :
-          begin
-            if (checksum_finish)
-              ck_next_state <= CHECKSUM_WAIT ;
-            else
-              ck_next_state <= GEN_CHECKSUM_END ;
-          end
-        CHECKSUM_WAIT      :
-          begin          
-              ck_next_state <= CK_IDLE ;
-          end      
-        default        :
-          ck_next_state <= CK_IDLE ;
-      endcase
-    end
-  
-  
-  
-  //checksum function
-  function    [31:0]  checksum_adder
-    (
-      input       [31:0]  dataina,
-      input       [31:0]  datainb
-    );
-    
-    begin
-      checksum_adder = dataina + datainb;
-    end
-  endfunction
-  
-  function    [31:0]  checksum_out
-    (
-      input       [31:0]  dataina
-    );
-    
-    begin
-      checksum_out = dataina[15:0]+dataina[31:16];
-    end
-    
-  endfunction
   
 
   
-  always @(posedge clk or negedge rst_n)
-    begin
-      if(rst_n == 1'b0)
-        begin
-          checksum_tmp0 <= 17'd0 ;
-          checksum_tmp1 <= 17'd0 ;
-          checksum_tmp2 <= 17'd0 ;
-          checksum_tmp3 <= 17'd0 ;
-          checksum_tmp4 <= 17'd0 ;
-          checksum_tmp5 <= 18'd0 ;
-          checksum_tmp6 <= 18'd0 ;
-          checksum_tmp7 <= 19'd0 ;
-          checksum_tmp8 <= 20'd0 ;
-        end
-      else if (ck_state == HEADER_CHECKSUM)
-        begin
-          checksum_tmp0 <= checksum_adder(source_ip_addr[31:16],source_ip_addr[15:0]);  //source ip address
-          checksum_tmp1 <= checksum_adder(destination_ip_addr[31:16],destination_ip_addr[15:0]);     //destination ip address
-          checksum_tmp2 <= checksum_adder({8'd0,8'd17},checksum_udp_len);                   //protocol type
-          checksum_tmp3 <= checksum_adder(udp_send_source_port,udp_send_destination_port);           //udp data length
-          checksum_tmp4 <= checksum_adder(checksum_udp_len, 16'd0);
-          checksum_tmp5 <= checksum_adder(checksum_tmp0, checksum_tmp1);
-          checksum_tmp6 <= checksum_adder(checksum_tmp2, checksum_tmp3);
-          checksum_tmp7 <= checksum_adder(checksum_tmp5, checksum_tmp6);
-          checksum_tmp8 <= checksum_adder(checksum_tmp4, checksum_tmp7);
-        end
-      else if (ck_state == CK_IDLE)
-        begin
-          checksum_tmp0 <= 17'd0 ;
-          checksum_tmp1 <= 17'd0 ;
-          checksum_tmp2 <= 17'd0 ;
-          checksum_tmp3 <= 17'd0 ;
-          checksum_tmp4 <= 17'd0 ;
-          checksum_tmp5 <= 18'd0 ;
-          checksum_tmp6 <= 18'd0 ;
-          checksum_tmp7 <= 19'd0 ;
-          checksum_tmp8 <= 20'd0 ;
-        end
-        
-    end
-    
-  always @(posedge clk or negedge rst_n)
-    begin
-      if(rst_n == 1'b0)
-        checksum_tmp9 <= 32'd0 ;
-      else if (ck_state == GEN_CHECKSUM)
-        begin
-          if(checksum_cnt[0] == 1'b1)
-            checksum_tmp9 <= checksum_adder({ram_wr_data_d1,ram_wr_data_d0},checksum_buf);
-        end
-      else if (ck_state == GEN_ODD_CHECKSUM)
-        checksum_tmp9 <= checksum_adder({ram_wr_data_d0,8'h00},checksum_tmp9);        //if udp data length is odd, fill with one byte 8'h00
-      else if (ck_state == CK_IDLE)
-        checksum_tmp9 <= 32'd0 ;
-    end
-    
-  always @(posedge clk or negedge rst_n)
-    begin
-      if (~rst_n)
-        checksum_buf <= 32'd0 ;
-      else if (ck_state == GEN_CHECKSUM)
-        checksum_buf <= checksum_tmp9 ;
-      else
-        checksum_buf <= 32'd0 ;
-    end
-    
-  always @(posedge clk or negedge rst_n)
-    begin
-      if(rst_n == 1'b0)
-        checksum_cnt <= 16'd0 ;
-      else if ((ck_state ==  HEADER_CHECKSUM || ck_state ==  GEN_ODD_CHECKSUM || ck_state ==  GEN_CHECKSUM_END) && (ck_state != ck_next_state))
-        checksum_cnt <= 16'd0 ;
-      else if (ck_state ==  GEN_CHECKSUM && ck_next_state == GEN_CHECKSUM_END)
-        checksum_cnt <= 16'd0 ;
-      else if (ck_state ==  HEADER_CHECKSUM || ck_state ==  GEN_CHECKSUM || ck_state ==  GEN_ODD_CHECKSUM || ck_state ==  GEN_CHECKSUM_END)
-        checksum_cnt <= checksum_cnt + 1'b1 ;
-      else
-        checksum_cnt <= 16'd0 ;
-    end
-    
-  always @(posedge clk or negedge rst_n)
-    begin
-      if(rst_n == 1'b0)
-        check_out <= 32'd0;
-      else if (ck_state ==  GEN_CHECKSUM_END)
-        begin
-          if(checksum_cnt == 16'd0)
-            check_out <= checksum_adder(checksum_tmp9, checksum_tmp8);
-          else if (checksum_cnt == 16'd1)
-            check_out <= checksum_out(check_out) ;
-          else if (checksum_cnt == 16'd2)
-            check_out <= checksum_out(check_out) ;
-        end
-    end
-    
-  always @(posedge clk or negedge rst_n)
-    begin
-      if (~rst_n)
-        checkout_buf <= 32'd0 ;
-      else if (ck_state == GEN_CHECKSUM_END)
-        checkout_buf <= ~check_out ;
-    end
-    
-  // assign checksum = ~checkout_buf[15:0] ;
-  
-  
-  always @(posedge clk or negedge rst_n)
-    begin
-      if (~rst_n)
-        checksum_finish <= 1'b0 ;
-      else if (ck_state == GEN_CHECKSUM_END && checksum_cnt == 16'd4)
-        checksum_finish <= 1'b1 ;
-      else
-        checksum_finish <= 1'b0 ;
-    end
-    
-  
-  always @(posedge clk or negedge rst_n)
-    begin
-      if(rst_n == 1'b0)
-        udp_ram_data_req <= 1'b0 ;
-      else if (ck_state == HEADER_CHECKSUM && checksum_cnt == 16'd5)
-        udp_ram_data_req <= 1'b1 ;
-      else
-        udp_ram_data_req <= 1'b0 ;
-    end  
-  
-  
-  always @(posedge clk or negedge rst_n)
-    begin
-      if (~rst_n)
-        checksum_wr <= 1'b0 ;
-      else if (ck_state == CHECKSUM_WAIT)
-        checksum_wr <= 1'b1 ;
-      else
-        checksum_wr <= 1'b0 ;
-    end
-  
-    
-  always @(posedge clk or negedge rst_n)
-    begin
-      if (~rst_n)
-        checksum_udp_len <= 16'd0 ;
-      else if ((ck_state == CK_IDLE) && (ck_state != ck_next_state))
-        checksum_udp_len <= udp_send_data_length + 8 ;
-    end
-  
-  always @(posedge clk or negedge rst_n)
-    begin
-      if (~rst_n)
-        checksum_in <= 32'd0 ;
-      else if (ck_state == CHECKSUM_WAIT)
-        checksum_in <= {checksum_udp_len, checkout_buf[15:0] } ;
-      else
-        checksum_in <= 32'd0 ;
- //checksum_in <=checksum_in ;
-    end  
-    
-  always @(posedge clk or negedge rst_n)
-    begin
-      if (~rst_n)
-        udp_tx_end <= 1'b0 ;
-      else if (ck_state == CHECKSUM_WAIT)
-        udp_tx_end <= 1'b1 ;
-      else
-        udp_tx_end <= 1'b0 ;
-    end  
+always @(posedge clk or negedge rst_n)
+  begin
+    if(rst_n == 1'b0)
+      begin
+        ram_wr_data_d0 <= 8'd0 ;
+        ram_wr_data_d1 <= 8'd0 ;
+      end
+    else
+      begin
+        ram_wr_data_d0 <= ram_wr_data ;
+        ram_wr_data_d1 <= ram_wr_data_d0 ;
+      end
+  end
+//ram signal
 
-//udp_checksum_fifo udp_tx_checksum
-//(
-//	.aclr          (~rst_n          ),
-//	.clock         (clk            ),
-//	.data          (checksum_in    ),
-//	.rdreq         (checksum_rd    ),
-//	.wrreq         (checksum_wr    ),
-//	.q             (checksum_q     ),
-//	.empty         (               ),
-//	.usedw         (usedw          ),
-//	.full          (               )
-//	);  
+always @(posedge clk or negedge rst_n)
+  begin
+    if(rst_n == 1'b0)
+      begin
+        ram_rdata_d0 <= 8'd0 ;
+        ram_rdata_d1 <= 8'd0 ;
+      end
+    else
+      begin
+        ram_rdata_d0 <= fifo_data ;
+        ram_rdata_d1 <= ram_rdata_d0 ;
+      end
+  end
 
-/*udp_checksum_fifo udp_tx_checksum (
-    .wr_data(checksum_in),
-    .wr_en(checksum_wr),
-    .full(),
-    .almost_full(al_full),
-    .wr_water_level(usedw),
-    .rd_data(checksum_q),
-    .rd_en(checksum_rd),
-    .empty(emp_sum),
-    .rd_water_level(use_rd),
-    .clk(clk ),
-    .rst(~rst_n));*/
-udp_checksum_fifo_drm udp_tx_checksum (
-    .wr_clk            ( clk            ) ,
-    .wr_rst          ( ~rst_n           ) ,
-    .wr_data         ( checksum_in      ) ,
-    .wr_en           (checksum_wr       ) ,
-    .wr_full         (                  ) ,
-    .wr_water_level  (  usedw           ) ,
-    .rd_clk         (clk                ),
-    .rd_rst         ( ~rst_n            ) ,
-    .almost_full    ( al_full           ) ,
-    .rd_data        ( checksum_q        ) ,
-    .rd_en          (checksum_rd        ) ,
+  
+always @(posedge clk or negedge rst_n)
+  begin
+    if(rst_n == 1'b0)
+      fifo_rd_en <= 1'b0 ;
+    else if (state == UDP_SEND && udp_send_cnt > 3 && udp_send_cnt < udp_total_data_length - 3)
+      fifo_rd_en <= 1'b1 ;
+    else
+      fifo_rd_en <= 1'b0 ;
+  end
+  
+//checksum counter
+always @(posedge clk or negedge rst_n)
+  begin
+    if (~rst_n)
+      udp_send_cnt  <= 16'd0 ;
+    else if (state == UDP_SEND)
+      udp_send_cnt <= udp_send_cnt + 1'b1 ;
+    else
+      udp_send_cnt <= 16'd0 ;
+  end
+  
+  
+//generate udp and ip data length
+always @(posedge clk or negedge rst_n)
+  begin
+    if(rst_n == 1'b0)
+      begin
+        udp_total_data_length <= 16'd0 ;
+        udp_data_length <= 16'd0 ;
+      end
+    else
+      begin
+        udp_data_length <= udp_send_data_length + 8;
+        if (udp_send_data_length < 18)
+          udp_total_data_length <= 26 ;
+        else
+          udp_total_data_length <= udp_send_data_length + 8 ;
+      end
+  end
 
-    .rd_empty       (emp_sum            ) ,
-
-    .rd_water_level ( use_rd           ) ,
-
-    .almost_empty   (                  )
-);
+  
+//*****************************************************************************************//
+//send udp data
+//*****************************************************************************************//
+always @(posedge clk or negedge rst_n)
+  begin
+    if (~rst_n)
+      udp_tx_data <= 8'h00  ;
+    else if (state == UDP_SEND)
+      begin
+        case(udp_send_cnt)
+          16'd0   :   udp_tx_data <= udp_send_source_port[15:8] ;
+          16'd1   :   udp_tx_data <= udp_send_source_port[7:0] ;
+          16'd2   :   udp_tx_data <= udp_send_destination_port[15:8] ;
+          16'd3   :   udp_tx_data <= udp_send_destination_port[7:0] ;
+          16'd4   :   udp_tx_data <= udp_data_length[15:8] ;
+          16'd5   :   udp_tx_data <= udp_data_length[7:0] ;
+          16'd6   :   udp_tx_data <= 8'h00 ;//checksum[15:8] ;
+          16'd7   :   udp_tx_data <= 8'h00 ;//checksum[7:0]  ;
+          default :
+		    begin
+              if (udp_data_length < 26)
+                begin
+                  if (udp_send_cnt <= udp_data_length - 1)
+                    udp_tx_data <= ram_rdata_d0 ;
+                  else
+                    udp_tx_data <= 8'h00 ;
+                end
+              else
+                udp_tx_data <= ram_rdata_d0 ;
+            end
+        endcase
+      end
+    else
+      udp_tx_data <= 8'h00 ;
+  end
+  
 endmodule

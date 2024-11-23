@@ -8,23 +8,18 @@ module ip_tx_mode
        (
          input                    clk ,
          input                    rst_n,
-         input                    mac_send_end,
+         input                    mac_tx_end,
          
-         
-         input                    udp_tx_req,
          input                    udp_tx_ready ,
          input      [7:0]         udp_tx_data,
          input      [15:0]        udp_send_data_length,
-         output reg               udp_tx_ack,
          
-         input                    icmp_tx_req,
+         
          input                    icmp_tx_ready,
          input      [7:0]         icmp_tx_data,
          input      [15:0]        icmp_send_data_length,
-         output reg               icmp_tx_ack,
          
-         input                    ip_tx_ack,
-         output reg               ip_tx_req,
+         
          output reg               ip_tx_ready,
          output reg [7:0]         ip_tx_data,
          output reg [7:0]         ip_send_type,
@@ -38,15 +33,13 @@ localparam ip_icmp_type = 8'h01 ;
 
 reg [15:0]    timeout ;
 
-parameter IDLE      = 5'b00001 ;
-parameter UDP_WAIT  = 5'b00010 ;
-parameter UDP       = 5'b00100 ;
-parameter ICMP_WAIT = 5'b01000 ;
-parameter ICMP      = 5'b10000 ;
+parameter IDLE  = 3'b001 ;
+parameter UDP   = 3'b010 ;
+parameter ICMP  = 3'b100 ;
 
 
-reg [4:0]    state  ;
-reg [4:0]    next_state ;
+reg [2:0]    state  ;
+reg [2:0]    next_state ;
 
 always @(posedge clk or negedge rst_n)
   begin
@@ -61,39 +54,26 @@ always @(*)
     case(state)
       IDLE        :
         begin
-          if (udp_tx_req)
-            next_state <= UDP_WAIT ;
-          else if (icmp_tx_req)
-            next_state <= ICMP_WAIT  ;
+          if (udp_tx_ready)
+            next_state <= UDP ;
+          else if (icmp_tx_ready)
+            next_state <= ICMP  ;
           else
             next_state <= IDLE ;
         end
-      UDP_WAIT    :
-        begin
-		  if (ip_tx_ack)
-		    next_state <= UDP ;
-		  else
-		    next_state <= UDP_WAIT ;
-        end		
+        
       UDP         :
         begin
-          if (mac_send_end)
+          if (mac_tx_end)
             next_state <= IDLE ;
           else if (timeout == 16'hffff)
             next_state <= IDLE ;
           else
             next_state <= UDP ;
         end
-	  ICMP_WAIT    :
-        begin
-		  if (ip_tx_ack)
-		    next_state <= ICMP ;
-		  else
-		    next_state <= ICMP_WAIT ;
-        end	
       ICMP        :
         begin
-          if (mac_send_end)
+          if (mac_tx_end)
             next_state <= IDLE ;
           else if (timeout == 16'hffff)
             next_state <= IDLE ;
@@ -120,42 +100,12 @@ always @(posedge clk or negedge rst_n)
   begin
     if (~rst_n)
       ip_send_data_length <= 16'd0 ;
-    else if (state == ICMP_WAIT || state == ICMP)
+    else if (state == ICMP)
       ip_send_data_length <= icmp_send_data_length ;
     else
       ip_send_data_length <= udp_send_data_length + 28 ;
   end
-
-always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      ip_tx_req  <= 1'b0  ;
-    else if (state == UDP_WAIT || state == ICMP_WAIT)
-	  ip_tx_req  <= 1'b1  ;
-    else 
-	  ip_tx_req  <= 1'b0  ;
-  end
   
-always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      udp_tx_ack  <= 1'b0  ;
-    else if (state == UDP)
-	  udp_tx_ack  <= 1'b1  ;
-    else 
-	  udp_tx_ack  <= 1'b0  ;
-  end
-
- 
- always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      icmp_tx_ack  <= 1'b0  ;
-    else if (state == ICMP)
-	  icmp_tx_ack  <= 1'b1  ;
-    else 
-	  icmp_tx_ack  <= 1'b0  ;
-  end
   
 always @(posedge clk or negedge rst_n)
   begin

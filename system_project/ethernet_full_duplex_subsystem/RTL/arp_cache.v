@@ -1,17 +1,17 @@
 module arp_cache
-(
- input                clk ,
- input                rst_n ,
- 
- input                arp_found,
- input  [31:0]        arp_rec_source_ip_addr,
- input  [47:0]        arp_rec_source_mac_addr,
- 
- input  [31:0]        destination_ip_addr,
- output reg [47:0]    destination_mac_addr,
- 
- output reg           mac_not_exist
-) ;
+       (
+         input                clk ,
+         input                rst_n ,
+         
+         input                arp_found,
+         input  [31:0]        arp_rec_source_ip_addr,
+         input  [47:0]        arp_rec_source_mac_addr,
+         
+         input  [31:0]        destination_ip_addr,
+         output reg [47:0]    destination_mac_addr,
+         
+         output reg           mac_not_exist
+       ) ;
        
 reg [79:0]  arp_cache ;
 

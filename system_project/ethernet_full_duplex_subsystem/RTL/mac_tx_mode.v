@@ -8,22 +8,15 @@ module mac_tx_mode
        (
          input               clk ,
          input               rst_n,
-         input               mac_send_end,
          
-         input               arp_tx_req,
          input               arp_tx_ready ,
          input      [7:0]    arp_tx_data,
          input               arp_tx_end,
-         output reg          arp_tx_ack,
          
-         input               ip_tx_req,
          input               ip_tx_ready,
          input      [7:0]    ip_tx_data,
          input               ip_tx_end,
-         output reg          ip_tx_ack,
          
-         input               mac_tx_ack,
-         output reg          mac_tx_req,		 
          output reg          mac_tx_ready,
          output reg [7:0]    mac_tx_data,
          output reg          mac_tx_end
@@ -33,15 +26,13 @@ module mac_tx_mode
        
 reg [15:0]    timeout ;
 
-parameter IDLE       = 5'b00001 ;
-parameter ARP_WAIT   = 5'b00010 ;
-parameter ARP        = 5'b00100 ;
-parameter IP_WAIT    = 5'b01000 ;
-parameter IP         = 5'b10000 ;
+parameter IDLE  = 3'b001 ;
+parameter ARP   = 3'b010 ;
+parameter IP    = 3'b100 ;
 
 
-reg [4:0]    state  ;
-reg [4:0]    next_state ;
+reg [2:0]    state  ;
+reg [2:0]    next_state ;
 
 always @(posedge clk or negedge rst_n)
   begin
@@ -56,39 +47,26 @@ always @(*)
     case(state)
       IDLE        :
         begin
-          if (arp_tx_req)
-            next_state <= ARP_WAIT ;
-          else if (ip_tx_req)
-            next_state <= IP_WAIT  ;
+          if (arp_tx_ready)
+            next_state <= ARP ;
+          else if (ip_tx_ready)
+            next_state <= IP  ;
           else
             next_state <= IDLE ;
         end
-      ARP_WAIT  :
-        begin
-		  if (mac_tx_ack)
-		    next_state <= ARP ;
-		  else
-		    next_state <= IP ;
-        end		
+        
       ARP         :
         begin
-          if (mac_send_end)
+          if (arp_tx_end)
             next_state <= IDLE ;
           else if (timeout == 16'hffff)
             next_state <= IDLE ;
           else
             next_state <= ARP ;
         end
-	  IP_WAIT  :
-        begin
-		  if (mac_tx_ack)
-		    next_state <= IP ;
-		  else
-		    next_state <= IP_WAIT ;
-        end	
       IP          :
         begin
-          if (mac_send_end)
+          if (ip_tx_end)
             next_state <= IDLE ;
           else if (timeout == 16'hffff)
             next_state <= IDLE ;
@@ -111,36 +89,8 @@ always @(posedge clk or negedge rst_n)
       timeout <= 16'd0 ;
   end
   
-always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      arp_tx_ack <= 1'b0 ;
-    else if (state == ARP)
-      arp_tx_ack <= 1'b1 ;
-    else
-      arp_tx_ack <= 1'b0 ;
-  end  
- 
-always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      ip_tx_ack <= 1'b0 ;
-    else if (state == IP)
-      ip_tx_ack <= 1'b1 ;
-    else
-      ip_tx_ack <= 1'b0 ;
-  end 
-
-always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      mac_tx_req <= 1'b0 ;
-    else if (state == ARP_WAIT || state == IP_WAIT)
-      mac_tx_req <= 1'b1 ;
-    else
-      mac_tx_req <= 1'b0 ;
-  end   
-
+  
+  
 always @(posedge clk or negedge rst_n)
   begin
     if (~rst_n)

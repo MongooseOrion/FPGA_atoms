@@ -2,26 +2,25 @@
 //Module Name : icmp_reply
 //Description : This module is used to receive icmp and reply
 //
-
+//////////////////////////////////////////////////////////////////////////////////////
+`timescale 1 ns/1 ns
 module icmp_reply
-(
-   input                  clk,
-   input                  rst_n,
-   
-   input                  mac_send_end,
-   input                  ip_tx_ack,
-   input  [7:0]           icmp_rx_data,             //received data
-   input                  icmp_rx_req,              //receive request
-   input                  icmp_rev_error,           //receive error from MAC or IP
-   input  [15:0]          upper_layer_data_length,    //data length received from IP layer
-   
-   input                  icmp_data_req,            //IP layer request data
-   output reg             icmp_tx_ready,            //icmp reply data ready
-   output reg [7:0]       icmp_tx_data,             //icmp reply data
-   output                 icmp_tx_end,              //icmp reply end
-   output reg             icmp_tx_req               //icmp reply request
- 
-);
+       (
+         input                  clk,
+         input                  rst_n,
+         
+         input  [7:0]           icmp_rx_data,             //received data
+         input                  icmp_rx_req,              //receive request
+         input                  icmp_rev_error,           //receive error from MAC or IP
+         input  [15:0]          upper_layer_data_length,    //data length received from IP layer
+         
+         input                  icmp_data_req,            //IP layer request data
+         output reg             icmp_tx_ready,            //icmp reply data ready
+         output reg [7:0]       icmp_tx_data,             //icmp reply data
+         output                 icmp_tx_end,              //icmp reply end
+         output reg             icmp_tx_req               //icmp reply request
+         
+       );
        
 localparam ECHO_REQUEST = 8'h08 ;
 localparam ECHO_REPLY   = 8'h00 ;
@@ -47,26 +46,23 @@ reg                     icmp_rev_error_d0 ;
 reg  [15:0]             timeout ;                 //timeout counter
 reg  [7:0]              icmp_rx_data_d0 ;         //register for receive data
 
-reg                     mac_send_end_d0 ;
-
 //receive and reply FSM
-parameter IDLE             =  12'b00000_0000_001  ;
-parameter REC_DATA         =  12'b00000_0000_010  ;
-parameter REC_ODD_DATA     =  12'b00000_0000_100  ;
-parameter VERIFY_CHECKSUM  =  12'b00000_0001_000  ;
-parameter REC_ERROR        =  12'b00000_0010_000  ;
-parameter REC_END_WAIT     =  12'b00000_0100_000  ;
-parameter GEN_CHECKSUM     =  12'b00000_1000_000  ;
-parameter SEND_WAIT_0      =  12'b00001_0000_000  ;
-parameter SEND_WAIT_1      =  12'b00010_0000_000  ;
-parameter SEND             =  12'b00100_0000_000  ;
-parameter REC_END          =  12'b01000_0000_000  ;
-parameter SEND_END         =  12'b10000_0000_000  ;
+parameter IDLE             =  11'b0000_0000_001  ;
+parameter REC_DATA         =  11'b0000_0000_010  ;
+parameter REC_ODD_DATA     =  11'b0000_0000_100  ;
+parameter VERIFY_CHECKSUM  =  11'b0000_0001_000  ;
+parameter REC_ERROR        =  11'b0000_0010_000  ;
+parameter REC_END_WAIT     =  11'b0000_0100_000  ;
+parameter GEN_CHECKSUM     =  11'b0000_1000_000  ;
+parameter SEND_WAIT        =  11'b0001_0000_000  ;
+parameter SEND             =  11'b0010_0000_000  ;
+parameter REC_END          =  11'b0100_0000_000  ;
+parameter SEND_END         =  11'b1000_0000_000  ;
 
 
 
-reg [11:0]     state      ;
-reg [11:0]     next_state ;
+reg [10:0]     state      ;
+reg [10:0]     next_state ;
 
 always @(posedge clk or negedge rst_n)
   begin
@@ -128,21 +124,14 @@ always @(*)
           else
             next_state <= REC_END_WAIT ;
         end
-	  SEND_WAIT_0      :
-        begin
-          if (ip_tx_ack)
-            next_state <= SEND_WAIT_1 ;
-          else
-            next_state <= SEND_WAIT_0 ;
-        end
-      SEND_WAIT_1      :
+      SEND_WAIT      :
         begin
           if (icmp_data_req)
             next_state <= SEND ;
           else if (timeout == 16'hffff)
             next_state <= IDLE ;
           else
-            next_state <= SEND_WAIT_1 ;
+            next_state <= SEND_WAIT ;
         end
       SEND           :
         begin
@@ -154,43 +143,32 @@ always @(*)
             next_state <= SEND ;
         end
       REC_END        :
-        next_state <= SEND_WAIT_0  ;
+        next_state <= SEND_WAIT  ;
       SEND_END       :
-	    begin
-		  if (mac_send_end_d0)
-		    next_state <= IDLE  ;
-		  else
-		    next_state <= SEND_END  ;
-	    end        
+        next_state <= IDLE  ;
       default        :
         next_state <= IDLE  ;
     endcase
   end
   
   
- always @(posedge clk or negedge rst_n)
-  begin
-    if (~rst_n)
-      mac_send_end_d0 <= 1'b0 ;
-    else 
-      mac_send_end_d0 <= mac_send_end ;
-  end   
+  
   
 always @(posedge clk or negedge rst_n)
   begin
     if (~rst_n)
       icmp_tx_req <=  1'b0 ;
-	else if (state == SEND_WAIT_1)
-	  icmp_tx_req <=  1'b0 ;
     else if (state == REC_END)
       icmp_tx_req <=  1'b1 ;
+    else
+      icmp_tx_req <=  1'b0 ;
   end
   
 always @(posedge clk or negedge rst_n)
   begin
     if (~rst_n)
       icmp_tx_ready <=  1'b0 ;
-    else if (state == SEND_WAIT_1)
+    else if (state == SEND_WAIT)
       icmp_tx_ready <=  1'b1 ;
     else
       icmp_tx_ready <=  1'b0 ;
@@ -226,7 +204,7 @@ always @(posedge clk or negedge rst_n)
   begin
     if (~rst_n)
       timeout <= 16'd0 ;
-    else if (state == SEND_WAIT_1)
+    else if (state == SEND_WAIT )
       timeout <= timeout + 1'b1 ;
     else
       timeout <= 16'd0 ;
@@ -323,17 +301,22 @@ always @(posedge clk or negedge rst_n)
       icmp_rec_ram_read_addr <= 11'd0 ;
   end
 //received ram: depth 256 width 8
-  icmp_rx_ram_8_256 icmp_receive_ram
-(		 
-    .wr_data(icmp_rx_data_d0),
-    .wr_addr(ram_write_addr),
-    .wr_en(ram_wr_en),
-    .wr_clk(clk),
-    .wr_rst(~rst_n),
-    .rd_addr(icmp_rec_ram_read_addr),
-    .rd_data(icmp_rec_ram_rdata),
-    .rd_clk(clk),
-    .rd_rst(~rst_n));
+dpram
+  #(
+    .WIDTH(8),
+    .DEPTH(8)
+  )
+  icmp_receive_ram
+  (
+    .clock      (clk                     ),
+    .data       (icmp_rx_data_d0           ),
+    .rdaddress  (icmp_rec_ram_read_addr  ),
+    .wraddress  (ram_write_addr          ),
+    .wren       (ram_wr_en               ),
+    .q          (icmp_rec_ram_rdata      )
+  );
+  
+  
 //***************************************************************************//
 //verify checksum 32 bit adder, in the end, add itself until high 16 bit is 0
 //** ************************************************************************//
@@ -539,15 +522,15 @@ always @(posedge clk or negedge rst_n)
     else if (state == SEND)
       begin
         case(icmp_rx_cnt)
-          16'd0    :   icmp_tx_data <= ECHO_REPLY ;
-          16'd1    :   icmp_tx_data <= icmp_code ;
-          16'd2    :   icmp_tx_data <= reply_checksum[15:8];
-          16'd3    :   icmp_tx_data <= reply_checksum[7:0] ;
-          16'd4    :   icmp_tx_data <= icmp_id[15:8] ;
-          16'd5    :   icmp_tx_data <= icmp_id[7:0] ;
-          16'd6    :   icmp_tx_data <= icmp_seq[15:8] ;
-          16'd7    :   icmp_tx_data <= icmp_seq[7:0] ;
-          default  :   icmp_tx_data <= icmp_rec_ram_rdata ;
+          16'd0    : icmp_tx_data <= ECHO_REPLY ;
+          16'd1    : icmp_tx_data <= icmp_code ;
+          16'd2    : icmp_tx_data <= reply_checksum[15:8];
+          16'd3    : icmp_tx_data <= reply_checksum[7:0] ;
+          16'd4    : icmp_tx_data <= icmp_id[15:8] ;
+          16'd5    : icmp_tx_data <= icmp_id[7:0] ;
+          16'd6    : icmp_tx_data <= icmp_seq[15:8] ;
+          16'd7    : icmp_tx_data <= icmp_seq[7:0] ;
+          default  : icmp_tx_data <= icmp_rec_ram_rdata ;
         endcase
       end
     else

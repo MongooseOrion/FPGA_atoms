@@ -20,7 +20,7 @@ module pgr_i2s_rx
 
 reg [DATA_WIDTH - 1:0]  sr;
 
-localparam CNT_WIDTH = LOG2(DATA_WIDTH);
+localparam CNT_WIDTH = LOG2(DATA_WIDTH);//对数，以2为底
 
 reg [1:0]               ws_d;
 wire                    ws_e;

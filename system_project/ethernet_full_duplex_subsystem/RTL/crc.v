@@ -1,5 +1,10 @@
 `timescale 1ns / 1ps
+/****************************************/
+//      　CRC32数据校验模块　　　   　　　　//
+/****************************************/
 module crc (Clk, Reset, Data_in, Enable, Crc,CrcNext);
+
+
 parameter Tp = 1;
 
 input Clk;
@@ -51,11 +56,12 @@ assign CrcNext[30] = Crc[22] ^ Crc[28] ^ Crc[31] ^ Data[4] ^ Data[7];
 assign CrcNext[31] = Crc[23] ^ Crc[29] ^ Data[5];
 
 always @ (posedge Clk, posedge Reset)
- begin
-  if (Reset) begin
-    Crc <={32{1'b1}};
+  begin
+    if (Reset)
+      begin
+        Crc <={32{1'b1}};
+      end
+    else if (Enable)
+      Crc <=CrcNext;
   end
-   else if (Enable)
-    Crc <=CrcNext;
- end
 endmodule

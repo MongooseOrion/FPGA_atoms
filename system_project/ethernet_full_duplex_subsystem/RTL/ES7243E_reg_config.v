@@ -9,7 +9,7 @@
 	output      reg_conf_done   ,
 	output      i2c_sclk        ,
 	inout       i2c_sdat        ,
-    output      clock_i2c        
+    output reg  clock_i2c        
 );
 
      reg [15:0]clock_cnt;
@@ -18,7 +18,6 @@
      reg [15:0]reg_data;
      reg start/*synthesis PAP_MARK_DEBUG="1"*/;
 	 reg reg_conf_done_reg;
-     reg clock_i2c/*synthesis PAP_MARK_DEBUG="1"*/;
      reg [8:0]reg_index/*synthesis PAP_MARK_DEBUG="1"*/;
 	  
      i2c_com u_i2c_com(
@@ -94,18 +93,18 @@ always@(reg_index)
 	 6  :reg_data    <=16'h001E ;//:w001E@
 	 7  :reg_data    <=16'h0100 ;//:w0100@
 	 8  :reg_data    <=16'h0200 ;//:w0200@
-	 9  :reg_data    <=16'h0320 ;//:w0320@
+	 9  :reg_data    <=16'h0320 ;//:w0320@//adc过采样控制，128*fs
 	 10 :reg_data    <=16'h0D00 ;//:w0D00@
 	 11 :reg_data    <=16'hF900 ;//:wF900@
-	 12 :reg_data    <=16'h0402 ;//:w0402@
-	 13 :reg_data    <=16'h0401 ;//:w0401@
+	 12 :reg_data    <=16'h0400 ;//:w0402@
+	 13 :reg_data    <=16'h0401 ;//:w0401@ //mclk预分频后，变成了12288000 × 2 = 24,576,000 ，对这里
 	 14 :reg_data    <=16'h0500 ;//:w0500@
-	 15 :reg_data    <=16'h0607 ;//:w0607@
-	 16 :reg_data    <=16'h0700 ;//:w0700@
+	 15 :reg_data    <=16'h0607 ;//:w0607@  //bclk位时钟（BCLK）：又名SClK，对应每一位（bit）数据
+	 16 :reg_data    <=16'h0700 ;//:w0700@ //寄存器07，08共同决定采样率，lrck表示左右声道的切换频率 即为采样频率fs=24,576,000/256=96000
 	 17 :reg_data    <=16'h08FF ;//:w08FF@
 	 18 :reg_data    <=16'h09C5 ;//:w09C5@
 	 19 :reg_data    <=16'h0A81 ;//:w0A81@
-	 20 :reg_data    <=16'h0B0C ;//:w0B0C@
+	 20 :reg_data    <=16'h0B0C ;//:w0B0C@//量化位数为16位；2.设置成模式A,MSB高位在lrck上升沿的第二个sclk（es0_dsclk）上升沿可用
 	 21 :reg_data    <=16'h0EBF ;//:w0EBF@
 	 22 :reg_data    <=16'h0F80 ;//:w0F80@
 	 23 :reg_data    <=16'h140C ;//:w140C@

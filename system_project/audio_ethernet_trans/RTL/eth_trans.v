@@ -7,8 +7,8 @@ module eth_trans (
     // 输入数据
     input           vin_clk/*synthesis PAP_MARK_DEBUG="1"*/,
     input           vin_sck/*synthesis PAP_MARK_DEBUG="1"*/,
-    input [16:0]    vin_ldata,
-    input [16:0]    vin_rdata,
+    input [15:0]    vin_ldata,
+    input [15:0]    vin_rdata,
 
     // RJ45 网口时序
     output                      e_mdc,                      //MDIO的时钟信号，用于读写PHY的寄存器
