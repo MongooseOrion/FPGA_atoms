@@ -16,6 +16,7 @@ module eth_trans (
     input                   data_rx_rd_en       ,           // 目的数据读使能
     output [15:0]           rx_data             ,           // 目的数据（字节流）
     output                  data_rx_ready       ,           // 目的数据就绪信号
+    output [11:0]           rx_data_fifo_count  ,           // RX FIFO 水位，可用于上级模块的控制
 
     // RJ45 网口时序
     output                      e_mdc,                      //MDIO的时钟信号，用于读写PHY的寄存器
@@ -41,12 +42,12 @@ wire            gmii_rx_clk;
 wire  [ 1:0]    speed_selection; // 1x gigabit, 01 100Mbps, 00 10mbps
 wire            duplex_mode;     // 1 full, 0 half
 
-wire            data_tx_vsync_delay/*synthesis PAP_MARK_DEBUG="1"*/;
-wire            data_tx_href_delay/*synthesis PAP_MARK_DEBUG="1"*/;
-wire [7:0]      source_tx_data_delay/*synthesis PAP_MARK_DEBUG="1"*/;
+wire            data_tx_vsync_delay;
+wire            data_tx_href_delay;
+wire [7:0]      source_tx_data_delay;
 
-wire [7:0]       udp_rec_data/*synthesis PAP_MARK_DEBUG="1"*/;
-wire             udp_rec_valid/*synthesis PAP_MARK_DEBUG="1"*/;
+wire [7:0]       udp_rec_data;
+wire             udp_rec_valid;
 
 //MDIO config
 assign speed_selection = 2'b10;
@@ -145,7 +146,7 @@ mac_package u_mac_package (
 
 // 
 // rx fifo
-rx_cache u_rx_cache(
+rx_cache_fifo u_rx_cache_fifo(
     .wr_clk                 (rgmii_rxc),                // input
     .wr_rst                 (!rst_n),                // input
     .wr_en                  (udp_rec_data_valid),                  // input
@@ -157,6 +158,7 @@ rx_cache u_rx_cache(
     .rd_en                  (data_rx_rd_en),                  // input
     .rd_data                (rx_data),              // output [15:0]
     .rd_empty               (),            // output
+    .rd_water_level         (rx_data_fifo_count),
     .almost_empty           (data_rx_ready)     // output
 );
 

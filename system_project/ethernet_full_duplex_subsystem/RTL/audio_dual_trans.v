@@ -237,6 +237,7 @@ eth_trans u_eth_trans(
     .data_rx_rd_en  (rx_data_rd_en),
     .rx_data        (voice_data_out),
     .data_rx_ready  (voice_data_out_ready),
+    .rx_data_fifo_count(),
 
     .e_mdc          (e_mdc),
     .e_mdio         (e_mdio),
