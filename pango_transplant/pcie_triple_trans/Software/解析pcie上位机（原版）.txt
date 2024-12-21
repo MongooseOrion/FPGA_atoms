@@ -1,0 +1,13 @@
+程序运行顺序，在main函数发起两条线程，一条为按键状态检测线程，一条为按键处理函数
+以dma manual页为例子
+如果点击到了start dma，执行start_dma_button函数，将 button_flag.manual_start置为true，且后续选择了正确的测试文件，文件名称保存在dma_write_file_name全局变量中，
+此时触发按键处理函数中的manual_process函数，这个函数读取菜单界面的各种设置的值，
+并进行一系列阈值判断（看值是否设置正确），触发get_write_data函数，内有open_load_file函数将值以四字节对其的方式存储到dma_write_file_info中的file_data_buffer，又回到get_write_data函数继续执行，
+然后判断如果文件的总字节数大于或等于指定长度，则使用指定长度（截断），再清楚数据缓存区dma_operation中的嵌套结构体的data，将dma_write_file_info.file_data_buffe（截断后的剩余数据）写入缓存区dma_operiton data区
+小于指定长度，按规律补全到指定长度，并写到dma_operation.databuf。
+重新回到process函数，将一次dma的长度（dw）和偏移地址也写到dma_operation里， 使用ioctl(pci_driver_fd, PCI_MAP_ADDR_CMD, dma_oper)，将dma_operation操作数据复制到内核处理，并分配连续DMA地址
+接下来就可以点击write_ddr，触发回调函数 使用ioctl(pci_driver_fd, PCI_WRITE_TO_KERNEL_CMD, &dma_operation);	/* 将数据写入内核缓存 */，将dma_operationbuf数据复制到dma_info.addr_r.data_buf，dma写区域数据清空，且dma读写地址也已知晓
+点击dma读，触发rc向ed发送配置信息，具体为向bar区地址，采用地址路由找到ed，然后再偏移0x10地址，发送dma地址信息。ed端开始dma写。
+点击dma写，同上。
+点击ddr读，从内存读取fpga进行dma写的数据，并将数据复制到用户区。
+

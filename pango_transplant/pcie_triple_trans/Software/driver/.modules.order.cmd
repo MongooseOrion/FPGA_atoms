@@ -1,0 +1,1 @@
+cmd_/home/deeplearn/Desktop/video_pcie_trans/pango_pcie_driver/pango_pcie_dma_alloc2/driver/modules.order := {   echo /home/deeplearn/Desktop/video_pcie_trans/pango_pcie_driver/pango_pcie_dma_alloc2/driver/pango_pci_driver.ko; :; } | awk '!x[$$0]++' - > /home/deeplearn/Desktop/video_pcie_trans/pango_pcie_driver/pango_pcie_dma_alloc2/driver/modules.order

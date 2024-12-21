@@ -1,0 +1,32 @@
+常用指令：
+ v4l2-ctl --device=/dev/video0  --set-parm=60  //虚拟摄像头帧率设置成60
+ v4l2-ctl --all --device=/dev/video0   //查看虚拟摄像头配置
+ sudo modprobe v4l2loopback //创建虚拟摄像头
+arecord -l  
+sudo modprobe snd-aloop
+arecord -D hw:Loopback,1,0 -f cd test.wav
+默认1080p分辨率，改变，修改app_pcie/include/config.h  中的宏定义参数    WIDTH,HEIGHT 即可。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+使用方法：
+
+一、在开机状态下烧录比特率文件，启动电脑。
+
+二、上位机使用方法。
+1. sudo modprobe v4l2loopback //创建虚拟摄像头。
+2.见/doc/应用指南.pdf                                第13页。
+3.点击write_dma                                        
+4.命令行输入  python3 video.py

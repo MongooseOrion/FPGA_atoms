@@ -24,7 +24,7 @@
 * ========================================================================
 */
 //
-// 8bit 移位相加乘法器
+// 移位相加乘法器，位数就是计算时延
 `timescale 1ns/1ps
 module shift_add_multiplier#(
     parameter DATA_WIDTH = 'd8
